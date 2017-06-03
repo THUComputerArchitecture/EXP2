@@ -47,6 +47,22 @@ function Instruction(name,src0, src1, src2){
     this.issueTime = -1;     //完成 issue, excute, result 的时间
     this.excuteTime = -1;
     this.resultTime = -1;
+
+    this.draw = function(){
+        var html =
+                '<tr>'  +
+                '<td>instruction' +
+                '<td>' + this.name +
+                '<td>' + this.src0 +
+                '<td>' + this.src1 +
+                '<td>' + this.src2 +
+                '<td>' + this.issueTime +
+                '<td>' + this.excuteTime +
+                '<td>' + this.resultTime +
+                '</tr>' ;
+
+        return html;
+    }
 }
 
 function LoadBuffer(){
@@ -112,7 +128,19 @@ function BUS(){
     for(i = 0; i < MUL_STATION_SIZE; i++)
         this.mulStations[i] = new ReservationStation();
 
-    // 尝试发射一条指令，返回成功与否
+    /*推进一个时钟周期
+        执行顺序：issue -> checkExcute -> checkStart
+     */
+    this.plusOneSecond = function(issueList){
+        if(!(issueList instanceof Array)){
+            console.log("issueList must be an Array!");
+            return;
+        }
+        this.checkExcute();
+        this.checkStart();
+    };
+
+    // 尝试发射一条指令，返回成功与否(是否存在结构冲突）
     this.tryIssue = function(instruction){
         if(instruction.name == iName.ld){
             return this.tryIssueLD(instruction);
@@ -338,8 +366,6 @@ function BUS(){
             }
         }
     };
-
-
 
     // 广播一个写回消息，检查所有可能需要该资源的设备
     this.emitWrite = function(devName, value){

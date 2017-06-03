@@ -22,8 +22,9 @@
 
         <!-- Add your site or application content here -->
         <p>Hello world! This is HTML5 Boilerplate.</p>
+        <table id="instArea">
 
-
+        </table>
         <script src="js/plugins.js"></script>
         <script src="js/defs.js"></script>
         <script src="js/main.js"></script>
@@ -43,11 +44,13 @@
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
 
             var bus = new BUS();
-            var inst = new Instruction(iName.addd, 0,1,2);
-            console.log(bus.tryIssue(inst));
-            console.log(bus.tryIssue(inst));
-            console.log(bus.tryIssue(inst));
-            console.log(bus.tryIssue(inst));
+            var instList = new Array(5);
+            instList[0] = new Instruction(iName.addd, 0,1,2);
+            instList[1] = new Instruction(iName.muld, 3,4,5);
+            instList[2] = new Instruction(iName.ld, 6,7,8);
+            $("#instArea").append(instList[0].draw());
+            $("#instArea").append(instList[1].draw());
+            $("#instArea").append(instList[2].draw());
         </script>
     </body>
 </html>
