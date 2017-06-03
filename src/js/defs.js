@@ -36,7 +36,7 @@ op2Time[iName.ld] = CC.ld;
 op2Time[iName.st] = CC.st;
 
 var memory = new Array(MEM_SIZE);
-for(i = 0 ; i < MEM_SIZE; i++)
+for(var i = 0 ; i < MEM_SIZE; i++)
     memory[i] = 0.0;
 
 function Instruction(name,src0, src1, src2){
@@ -66,39 +66,105 @@ function Instruction(name,src0, src1, src2){
 }
 
 function LoadBuffer(){
-    this.busy = false;
-    this.address = -1;
-    this.value = null;
-    this.instruction = null;
-    this.remainingTime = -1;    //完成load操作所需的时间
+
+    this.draw = function(){
+        var html =
+            '<tr>'  +
+            '<td>LoadBuffer' +
+            '<td>' + this.busy +
+            '<td>' + this.address +
+            '<td>' + this.value +
+            '<td>' + this.remainingTime +
+            '</tr>' ;
+
+        return html;
+    }
+    this.init = function(){
+        this.busy = false;
+        this.address = -1;
+        this.value = null;
+        this.instruction = null;
+        this.remainingTime = -1;
+    }
+    this.init();
 }
 
 function StoreBuffer(){
-    this.busy = false;
-    this.address = -1;
-    this.value = null;
-    this.instruction = null;
-    this.remainingTime = -1;
-    this.waitDev = null;        // 如果有指令预定写回到源寄存器，则该变量为指令所在部件的名字
-    this.active = false;
+    this.draw = function(){
+        var html =
+            '<tr>'  +
+            '<td>StoreBuffer' +
+            '<td>' + this.busy +
+            '<td>' + this.address +
+            '<td>' + this.value +
+            '<td>' + this.waitDev +
+            '<td>' + this.active +
+            '<td>' + this.remainingTime +
+            '</tr>' ;
+
+        return html;
+    }
+    this.init = function(){
+        this.busy = false;
+        this.address = -1;
+        this.value = null;
+        this.instruction = null;
+        this.remainingTime = -1;
+        this.waitDev = null;        // 如果有指令预定写回到源寄存器，则该变量为指令所在部件的名字
+        this.active = false;
+    }
+    this.init();
 }
 
 function ReservationStation(){
-    this.op = "";               // 操作名称，应为iName中的一个
-    this.v1 = 0;                // 操作数1，2的值
-    this.v2 = 0;
-    this.q1 = "";               // 操作数等待状态，如果不为空，表示其等待在某一个部件中
-    this.q2 = "";
-    this.result = 0;
-    this.busy = false;          // 是否已被占用
-    this.active = false;        // 是否正在运算
-    this.remainingTime = -1;    // 指令还剩多少时间运行完毕
-    this.instruction = null;
+    this.init = function() {
+        this.op = null;               // 操作名称，应为iName中的一个
+        this.v1 = 0;                // 操作数1，2的值
+        this.v2 = 0;
+        this.q1 = null;               // 操作数等待状态，如果不为空，表示其等待在某一个部件中
+        this.q2 = null;
+        this.result = 0;
+        this.busy = false;          // 是否已被占用
+        this.active = false;        // 是否正在运算
+        this.remainingTime = -1;    // 指令还剩多少时间运行完毕
+        this.instruction = null;
+    }
+    this.draw = function(type){
+        var html =
+            '<tr>'  +
+            '<td>' + type + 'ReserveStation'  +
+            '<td>' + this.op +
+            '<td>' + this.v1 +
+            '<td>' + this.q1 +
+            '<td>' + this.v2 +
+            '<td>' + this.q2 +
+            '<td>' + this.result +
+            '<td>' + this.busy +
+            '<td>' + this.active +
+            '<td>' + this.remainingTime +
+            '</tr>' ;
+
+        return html;
+    }
+    this.init();
 }
 
 function FU(){
-    this.writer = null;         // 如果有指令预定写回到该寄存器，则该变量为指令所在部件的名字
-    this.value = 0.0;
+    this.init = function(){
+        this.waitDev = null;         // 如果有指令预定写回到该寄存器，则该变量为指令所在部件的名字
+        this.value = 0.0;
+    }
+    this.draw = function(){
+        var html =
+            '<tr>'  +
+            '<td>FU' +
+            '<td>' + this.waitDev +
+            '<td>' + this.value +
+            '</tr>' ;
+
+        return html;
+    }
+    this.init();
 }
 
 var LOAD_BUF_SIZE = 3;
@@ -117,27 +183,35 @@ function BUS(){
     this.instBuffer = new Array(INST_BUF_SIZE);
     this.curTime = 0;
 
-    for(i = 0; i < LOAD_BUF_SIZE; i++)
+    for(var i = 0; i < LOAD_BUF_SIZE; i++)
         this.loadBuffers[i] = new LoadBuffer();
-    for(i = 0; i < STORE_BUF_SIZE; i++)
+    for(var i = 0; i < STORE_BUF_SIZE; i++)
         this.storeBuffers[i] = new StoreBuffer();
-    for(i = 0; i < FU_SIZE; i++)
+    for(var i = 0; i < FU_SIZE; i++)
         this.FUs[i] = new FU();
-    for(i = 0; i < ADD_STATION_SIZE; i++)
+    for(var i = 0; i < ADD_STATION_SIZE; i++)
         this.addStations[i] = new ReservationStation();
-    for(i = 0; i < MUL_STATION_SIZE; i++)
+    for(var i = 0; i < MUL_STATION_SIZE; i++)
         this.mulStations[i] = new ReservationStation();
 
     /*推进一个时钟周期
         执行顺序：issue -> checkExcute -> checkStart
      */
     this.plusOneSecond = function(issueList){
-        if(!(issueList instanceof Array)){
+        if(issueList != null && !(issueList instanceof Array)){
             console.log("issueList must be an Array!");
             return;
         }
+        if(issueList != null){
+            for(var i = 0; i < issueList.length; i++){
+                if(issueList[i] != null)
+                    console.log("issue " + i + " " + issueList[i].name  + " " + this.tryIssue(issueList[i]));
+            }
+        }
+
         this.checkExcute();
         this.checkStart();
+        this.curTime ++;
     };
 
     // 尝试发射一条指令，返回成功与否(是否存在结构冲突）
@@ -155,18 +229,18 @@ function BUS(){
 
     this.tryIssueLD = function(instruction){
         // 找到空buffer
-        for(i = 0; i < LOAD_BUF_SIZE; i++){
+        for(var i = 0; i < LOAD_BUF_SIZE; i++){
             if(!(this.loadBuffers[i].busy)){
                 // 占用buffer
                 this.loadBuffers[i].busy = true;
                 this.loadBuffers[i].address = instruction.src1;
                 this.loadBuffers[i].value = 0;
                 this.loadBuffers[i].instruction = instruction;
-                this.loadBuffers[i].remainingTime = CC.st;
+                this.loadBuffers[i].remainingTime = CC.st + 1; // +1因为接下来立即会执行
                 instruction.issueTime = this.curTime;
                 // 声明写回寄存器
                 var dest = instruction.src0;
-                this.FUs[dest].writer = devName.load + "_" + i;
+                this.FUs[dest].waitDev = devName.load + "_" + i;
                 return true;
             }
         }
@@ -175,7 +249,7 @@ function BUS(){
 
     this.tryIssueST = function(instruction){
         // 找到空buffer
-        for(i = 0; i < STORE_BUF_SIZE; i++){
+        for(var i = 0; i < STORE_BUF_SIZE; i++){
             if(!(this.storeBuffers[i].busy)){
                 // 占用buffer
                 this.storeBuffers[i].busy = true;
@@ -185,7 +259,7 @@ function BUS(){
                 instruction.issueTime = this.curTime;
                 // 检查源寄存器状态
                 var src = instruction.src0;
-                if(this.FUs[src].writer == null){
+                if(this.FUs[src].waitDev == null){
                     //寄存器可用,直接取值
                     this.storeBuffers[i].value = this.FUs[src].value;
                     this.storeBuffers[i].waitDev = null;
@@ -194,7 +268,7 @@ function BUS(){
                 }
                 else{
                     //寄存器不可用，标记等待
-                    this.storeBuffers[i].waitDev = this.FUs[src].writer;
+                    this.storeBuffers[i].waitDev = this.FUs[src].waitDev;
                     this.storeBuffers[i].active = false;
                 }
                 return true;
@@ -204,7 +278,7 @@ function BUS(){
     };
 
     this.tryIssueADD_SUB = function(instruction){
-        for(i = 0; i < ADD_STATION_SIZE; i++){
+        for(var i = 0; i < ADD_STATION_SIZE; i++){
             // 寻找空站
             if(!(this.addStations[i].busy)){
                 // 占用保留站
@@ -216,25 +290,18 @@ function BUS(){
                 var src = instruction.src1;
                 var availableCnt = 0;
                 // 检查源寄存器状态
-                if((this.addStations[i].q1 = this.FUs[src].writer) == null) {//寄存器可用
+                if((this.addStations[i].q1 = this.FUs[src].waitDev) == null) {//寄存器可用
                     this.addStations[i].v1 = this.FUs[src].value;
                     availableCnt ++;
                 }
                 src = instruction.src2;
-                if((this.addStations[i].q2 = this.FUs[src].writer) == null) {
+                if((this.addStations[i].q2 = this.FUs[src].waitDev) == null) {
                     this.addStations[i].v2 = this.FUs[src].value;
                     availableCnt++;
                 }
-                if(availableCnt == 2){       //操作数集齐，可以开始
-                    this.addStations[i].active = true;
-                    if(instruction.name == iName.addd)
-                        this.addStations[i].remainingTime = CC.add;
-                    else
-                        this.addStations[i].remainingTime = CC.sub;
-                }
                 // 声明写回目的寄存器
                 var dest = instruction.src0;
-                this.FUs[dest].writer = devName.add+"_"+ i;
+                this.FUs[dest].waitDev = devName.add+"_"+ i;
                 return true;
             }
         }
@@ -242,7 +309,7 @@ function BUS(){
     };
 
     this.tryIssueDIV_MUL = function(instruction){
-        for(i = 0; i < MUL_STATION_SIZE; i++){
+        for(var i = 0; i < MUL_STATION_SIZE; i++){
             // 寻找空站
             if(!(this.mulStations[i].busy)){
                 // 占用保留站
@@ -254,24 +321,17 @@ function BUS(){
                 var src = instruction.src1;
                 var availableCnt = 0;
                 // 检查源寄存器状态
-                if((this.mulStations[i].q1 = this.FUs[src].writer) == null) {//寄存器可用
+                if((this.mulStations[i].q1 = this.FUs[src].waitDev) == null) {//寄存器可用
                     this.mulStations[i].v1 = this.FUs[src].value;
                     availableCnt ++;
                 }
                 src = instruction.src2;
-                if((this.mulStations[i].q2 = this.FUs[src].writer) == null) {
+                if((this.mulStations[i].q2 = this.FUs[src].waitDev) == null) {
                     this.mulStations[i].v2 = this.FUs[src].value;
                     availableCnt++;
                 }
-                if(availableCnt == 2){       //操作数集齐，可以开始
-                    this.mulStations[i].active = true;
-                    if(instruction.name == iName.muld)
-                        this.mulStations[i].remainingTime = CC.mul;
-                    else
-                        this.mulStations[i].remainingTime = CC.div;
-                }
                 var dest = instruction.src0;
-                this.FUs[dest].writer = devName.mul+"_"+ i;
+                this.FUs[dest].waitDev = devName.mul+"_"+ i;
                 return true;
             }
         }
@@ -287,7 +347,7 @@ function BUS(){
     };
 
     this.excuteLoad = function(){
-        for(i = 0; i < LOAD_BUF_SIZE; i++){
+        for(var i = 0; i < LOAD_BUF_SIZE; i++){
             var buffer = this.loadBuffers[i];
             // 检查是否被使用
             if(!buffer.busy)
@@ -299,15 +359,15 @@ function BUS(){
             }
             // 检查是否需要写回
             else if(buffer.remainingTime < 0){
-                buffer.busy = false;
                 buffer.instruction.writeTime = this.curTime;
                 this.emitWrite(devName.load+"_"+ i, buffer.value);
+                buffer.init();
             }
         }
     };
 
     this.excuteStore = function(){
-        for(i = 0; i < STORE_BUF_SIZE; i++){
+        for(var i = 0; i < STORE_BUF_SIZE; i++){
             var buffer = this.storeBuffers[i];
             // 检查是否被使用
             if(!buffer.busy)
@@ -318,15 +378,15 @@ function BUS(){
             }
             // 检查是否需要写回
             else if(buffer.remainingTime < 0){
-                buffer.busy = false;
                 buffer.instruction.writeTime = this.curTime;
                 memory[buffer.address] = buffer.value;
+                buffer.init();
             }
         }
     };
 
     this.excuteAdd = function(){
-        for(i = 0; i < ADD_STATION_SIZE; i++){
+        for(var i = 0; i < ADD_STATION_SIZE; i++){
             var station = this.addStations[i];
             //检查是否正在执行运算
             if(!station.busy || !station.active)
@@ -338,16 +398,15 @@ function BUS(){
             }
             // 检查是否需要写回
             else if(station.remainingTime < 0){
-                station.busy = false;
-                station.active = false;
                 station.instruction.resultTime = this.curTime;
                 this.emitWrite(devName.add + "_" + i, station.result);
+                station.init();
             }
         }
     };
 
     this.excuteMul = function(){
-        for(i = 0; i < MUL_STATION_SIZE; i++){
+        for(var i = 0; i < MUL_STATION_SIZE; i++){
             var station = this.mulStations[i];
             //检查是否正在执行运算
             if(!station.busy || !station.active)
@@ -359,10 +418,9 @@ function BUS(){
             }
             // 检查是否需要写回
             else if(station.remainingTime < 0){
-                station.busy = false;
-                station.active = false;
                 station.instruction.resultTime = this.curTime;
                 this.emitWrite(devName.mul + "_" + i, station.result);
+                station.init();
             }
         }
     };
@@ -370,14 +428,14 @@ function BUS(){
     // 广播一个写回消息，检查所有可能需要该资源的设备
     this.emitWrite = function(devName, value){
         var devCnt = 0;
-        for(i = 0; i < STORE_BUF_SIZE; i++){
+        for(var i = 0; i < STORE_BUF_SIZE; i++){
             if(this.storeBuffers[i].busy && this.storeBuffers[i].waitDev == devName){
                 this.storeBuffers[i].waitDev = null;
                 this.storeBuffers[i].value = value;
                 devCnt++;
             }
         }
-        for(i = 0; i < ADD_STATION_SIZE; i++){
+        for(var i = 0; i < ADD_STATION_SIZE; i++){
             if(this.addStations[i].busy){
                 if(this.addStations[i].q1 == devName){
                     this.addStations[i].q1 = null;
@@ -391,7 +449,7 @@ function BUS(){
                 }
             }
         }
-        for(i = 0; i < MUL_STATION_SIZE; i++){
+        for(var i = 0; i < MUL_STATION_SIZE; i++){
             if(this.mulStations[i].busy){
                 if(this.mulStations[i].q1 == devName){
                     this.mulStations[i].q1 = null;
@@ -405,19 +463,26 @@ function BUS(){
                 }
             }
         }
+        for(var i = 0; i < FU_SIZE; i++){
+            if(this.FUs[i].waitDev == devName){
+                this.FUs[i].waitDev = null;
+                this.FUs[i].value = value;
+                devCnt++;
+            }
+        }
         if(devCnt == 0)
-            console.log("No one wants the data!");
+            console.log("No one wants the data from " + devName + "!");
     };
 
     // 检查哪些设备可以开始执行
     this.checkStart = function(){
         this.startAdd();
         this.startMul();
-        shit.startStore();
+        this.startStore();
     };
 
     this.startStore = function(){
-        for(i = 0; i < STORE_BUF_SIZE; i++){
+        for(var i = 0; i < STORE_BUF_SIZE; i++){
             if(!this.storeBuffers[i].busy || this.storeBuffers[i].active)
                 continue;
             if(this.storeBuffers[i].waitDev == null && this.storeBuffers[i].active == false){
@@ -428,7 +493,7 @@ function BUS(){
     };
 
     this.startAdd = function(){
-        for(i = 0; i < ADD_STATION_SIZE; i++) {
+        for(var i = 0; i < ADD_STATION_SIZE; i++) {
             var station = this.addStations[i];
             if(!station.busy || station.active)
                 continue;
@@ -440,7 +505,7 @@ function BUS(){
     };
 
     this.startMul = function(){
-        for(i = 0; i < MUL_STATION_SIZE; i++) {
+        for(var i = 0; i < MUL_STATION_SIZE; i++) {
             var station = this.mulStations[i];
             if(!station.busy || station.active)
                 continue;

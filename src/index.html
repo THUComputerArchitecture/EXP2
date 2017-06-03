@@ -22,9 +22,28 @@
 
         <!-- Add your site or application content here -->
         <p>Hello world! This is HTML5 Boilerplate.</p>
-        <table id="instArea">
+        <table id="instArea" class="table">
 
         </table>
+        <table id="addStationArea" class="table">
+
+        </table>
+        <table id="mulStationArea" class="table">
+
+        </table>
+        <table id="loadBufArea" class="table">
+
+        </table>
+        <table id="storeBufArea" class="table">
+
+        </table>
+        <table id="FUArea" class="table">
+
+        </table>
+
+        <button onclick="bus.plusOneSecond(null);updateBus(bus);">
+            +1s
+        </button>
         <script src="js/plugins.js"></script>
         <script src="js/defs.js"></script>
         <script src="js/main.js"></script>
@@ -44,13 +63,14 @@
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
 
             var bus = new BUS();
-            var instList = new Array(5);
+            updateBus(bus);
+            var instList = new Array(3);
             instList[0] = new Instruction(iName.addd, 0,1,2);
             instList[1] = new Instruction(iName.muld, 3,4,5);
             instList[2] = new Instruction(iName.ld, 6,7,8);
-            $("#instArea").append(instList[0].draw());
-            $("#instArea").append(instList[1].draw());
-            $("#instArea").append(instList[2].draw());
+            bus.plusOneSecond(instList);
+            updateBus(bus);
+
         </script>
     </body>
 </html>
