@@ -3,6 +3,14 @@
  */
 var MEM_SIZE = 4096;
 
+function memDraw(index, value) {
+    html = '<tr id="' + devName.mem + "_" + index + '">' +
+        '<td>' + index +
+        '<td>' + value +
+        '</tr>';
+    return html;
+}
+
 var iName = {           //指令名称
     addd : "ADDD",
     subd : "SUBD",
@@ -12,10 +20,14 @@ var iName = {           //指令名称
     st : "ST"
 };
 
-var devName = {        // 声明写入寄存器的设备名称
-    add : "add",
-    mul : "mul",
-    load : "load"
+var devName = {        // 设备名称,用于匹配等待寄存器的设备（寄存器重命名）或者是网页中的id附与
+    add : "addStation",
+    mul : "mulStation",
+    load : "loadBuffer",
+    st : "storeBuffer",
+    FU : "FU",
+    inst : "instruction",
+    mem : 'memory'
 };
 
 var CC = {              // 操作耗时
@@ -35,10 +47,6 @@ op2Time[iName.muld] = CC.mul;
 op2Time[iName.ld] = CC.ld;
 op2Time[iName.st] = CC.st;
 
-var memory = new Array(MEM_SIZE);
-for(var i = 0 ; i < MEM_SIZE; i++)
-    memory[i] = 0.0;
-
 function Instruction(name,src0, src1, src2){
     this.name = name;
     this.src0 = src0;
@@ -48,9 +56,9 @@ function Instruction(name,src0, src1, src2){
     this.excuteTime = -1;
     this.resultTime = -1;
 
-    this.draw = function(){
+    this.draw = function(id){
         var html =
-                '<tr>'  +
+                '<tr id="'+ devName.inst + "_" + id + '">'  +
                 '<td>instruction' +
                 '<td>' + this.name +
                 '<td>' + this.src0 +
@@ -67,9 +75,9 @@ function Instruction(name,src0, src1, src2){
 
 function LoadBuffer(){
 
-    this.draw = function(){
+    this.draw = function(id){
         var html =
-            '<tr>'  +
+            '<tr id="'+ devName.ld + "_" + id + '">'  +
             '<td>LoadBuffer' +
             '<td>' + this.busy +
             '<td>' + this.address +
@@ -90,9 +98,9 @@ function LoadBuffer(){
 }
 
 function StoreBuffer(){
-    this.draw = function(){
+    this.draw = function(id){
         var html =
-            '<tr>'  +
+            '<tr id="'+ devName.st + "_" + id + '">'  +
             '<td>StoreBuffer' +
             '<td>' + this.busy +
             '<td>' + this.address +
@@ -129,10 +137,10 @@ function ReservationStation(){
         this.remainingTime = -1;    // 指令还剩多少时间运行完毕
         this.instruction = null;
     }
-    this.draw = function(type){
+    this.draw = function(id,type){
         var html =
-            '<tr>'  +
-            '<td>' + type + 'ReserveStation'  +
+            '<tr id="'+ type + "_" + id + '">'  +
+            '<td>' + type   +
             '<td>' + this.op +
             '<td>' + this.v1 +
             '<td>' + this.q1 +
@@ -154,9 +162,9 @@ function FU(){
         this.waitDev = null;         // 如果有指令预定写回到该寄存器，则该变量为指令所在部件的名字
         this.value = 0.0;
     }
-    this.draw = function(){
+    this.draw = function(id){
         var html =
-            '<tr>'  +
+            '<tr id="'+ devName.FU + "_" + id + '">'  +
             '<td>FU' +
             '<td>' + this.waitDev +
             '<td>' + this.value +
@@ -175,25 +183,31 @@ var MUL_STATION_SIZE = 2;
 var INST_BUF_SIZE = 20;
 
 function BUS(){
-    this.loadBuffers = new Array(LOAD_BUF_SIZE);
-    this.storeBuffers = new Array(STORE_BUF_SIZE);
-    this.FUs = new Array(FU_SIZE);
-    this.addStations = new Array(ADD_STATION_SIZE);
-    this.mulStations = new Array(MUL_STATION_SIZE);
-    this.instBuffer = new Array(INST_BUF_SIZE);
-    this.curTime = 0;
+    this.init = function() {
+        this.loadBuffers = new Array(LOAD_BUF_SIZE);
+        this.storeBuffers = new Array(STORE_BUF_SIZE);
+        this.FUs = new Array(FU_SIZE);
+        this.addStations = new Array(ADD_STATION_SIZE);
+        this.mulStations = new Array(MUL_STATION_SIZE);
+        this.instBuffer = new Array(INST_BUF_SIZE);
+        this.memory = new Array(MEM_SIZE);
 
-    for(var i = 0; i < LOAD_BUF_SIZE; i++)
-        this.loadBuffers[i] = new LoadBuffer();
-    for(var i = 0; i < STORE_BUF_SIZE; i++)
-        this.storeBuffers[i] = new StoreBuffer();
-    for(var i = 0; i < FU_SIZE; i++)
-        this.FUs[i] = new FU();
-    for(var i = 0; i < ADD_STATION_SIZE; i++)
-        this.addStations[i] = new ReservationStation();
-    for(var i = 0; i < MUL_STATION_SIZE; i++)
-        this.mulStations[i] = new ReservationStation();
+        this.curTime = 0;
 
+        for (var i = 0; i < LOAD_BUF_SIZE; i++)
+            this.loadBuffers[i] = new LoadBuffer();
+        for (var i = 0; i < STORE_BUF_SIZE; i++)
+            this.storeBuffers[i] = new StoreBuffer();
+        for (var i = 0; i < FU_SIZE; i++)
+            this.FUs[i] = new FU();
+        for (var i = 0; i < ADD_STATION_SIZE; i++)
+            this.addStations[i] = new ReservationStation();
+        for (var i = 0; i < MUL_STATION_SIZE; i++)
+            this.mulStations[i] = new ReservationStation();
+        for (var i = 0; i < MEM_SIZE; i++)
+            this.memory[i] = 0.0;
+    };
+    this.init();
     /*推进一个时钟周期
         执行顺序：issue -> checkExcute -> checkStart
      */
@@ -228,6 +242,10 @@ function BUS(){
     };
 
     this.tryIssueLD = function(instruction){
+        if(instruction.issueTime != -1){
+            console.log("[ISSUE]Make sure the inst' issue time is -1!");
+            return false;
+        }
         // 找到空buffer
         for(var i = 0; i < LOAD_BUF_SIZE; i++){
             if(!(this.loadBuffers[i].busy)){
@@ -354,12 +372,12 @@ function BUS(){
                 continue;
             // 检查是否执行完成
             if(buffer.remainingTime-- == 0){
-                buffer.value = memory[buffer.address];
+                buffer.value = this.memory[buffer.address];
                 buffer.instruction.excuteTime = this.curTime;
             }
             // 检查是否需要写回
             else if(buffer.remainingTime < 0){
-                buffer.instruction.writeTime = this.curTime;
+                buffer.instruction.resultTime = this.curTime;
                 this.emitWrite(devName.load+"_"+ i, buffer.value);
                 buffer.init();
             }
@@ -379,7 +397,7 @@ function BUS(){
             // 检查是否需要写回
             else if(buffer.remainingTime < 0){
                 buffer.instruction.writeTime = this.curTime;
-                memory[buffer.address] = buffer.value;
+                this.memory[buffer.address] = buffer.value;
                 buffer.init();
             }
         }
