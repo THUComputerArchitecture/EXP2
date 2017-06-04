@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html class="no-js" lang="" xmlns="http://www.w3.org/1999/html">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -25,6 +25,77 @@
         <button onclick="bus.plusOneSecond(null);updateBus(bus);">
             +1s
         </button>
+        <p>
+            <input type="text" id="nsAhead">
+            <button onclick="nsAhead(parseInt($('#nsAhead').val()));updateBus(bus);">+ns</button>
+        </p>
+        <button onclick="save2file(bus);">save</button>
+        <p>
+            <input type="file" id="loadFile">
+            <button onclick="loadFromFile(bus, document.getElementById('loadFile').files[0]);">
+                load
+            </button>
+        </p>
+        <p>
+            <input type="text" id="bpInsIndex">
+            <button onclick="setBreakPoint(bus, parseInt($('#bpInsIndex').val()));">
+                set break point
+            </button>
+            <button onclick="runUntilBP(bus);updateBus(bus);">
+                run until break point
+            </button>
+        </p>
+
+        <p>
+            <select id="newInsType"></select>
+            <input type="text" id="newInsDes">
+            <input type="text" id="newInsSrc0">
+            <input type="text" id="newInsSrc1">
+            <button onclick="addInstruction(bus, $('#newInsType').val(), $('#newInsDes').val(),
+                                $('#newInsSrc0').val(), $('#newInsSrc1').val());updateBus(bus);">
+                add new instruction
+            </button>
+        </p>
+
+        <p>
+            <input type="text" id="editInsIndex">
+            <select id="editInsType"></select>
+            <input type="text" id="editInsDes">
+            <input type="text" id="editInsSrc0">
+            <input type="text" id="editInsSrc1">
+            <button onclick="editInstruction(bus, parseInt($('#editInsIndex').val()), $('#editInsType').val(),
+                                                $('#editInsDes').val(), $('#editInsSrc0').val(),
+                                                $('#editInsSrc1').val());updateBus(bus)">
+                edit instruction
+            </button>
+        </p>
+
+        <p>
+            <input type="text" id="delInsNumber">
+            <button onclick="deleteInstruction(bus, parseInt($('#delInsNumber').val()));updateBus(bus)">
+                delete instruction
+            </button>
+        </p>
+
+        <p>
+            <select id="editFloatRegister"></select>
+            <input id="editFRValue">
+            <button onclick="editFloatRegisterValue(parseInt($('#editFloatRegister').val()),
+                                                parseFloat($('#editFRValue').val()));updateBus(bus)">
+                edit float register value
+            </button>
+        </p>
+
+        <p>
+            <input id="editMemAddress">
+            <input id="editMemValue">
+            <button onclick="var index = parseInt($('#editMemAddress').val());
+                                editMemoryValue(index,parseFloat($('#editMemValue').val()));
+                                redrawMem(bus.memory,index, 10);">
+                edit memory value
+            </button>
+        </p>
+
         <table id="instArea" class="table">
 
         </table>
@@ -47,7 +118,7 @@
 
         </table>
 
-
+        <script src="js/FileSaver.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/defs.js"></script>
         <script src="js/redraw.js"></script>
@@ -72,6 +143,17 @@
             var memStart = 0;
             var memNum = 10;
 
+            function selectInit() {
+                for(var i in iName) {
+                    var s = '<option value="' + iName[i] + '">' + iName[i] + '</option>';
+                    $('#newInsType').append(s);
+                    $('#editInsType').append(s);
+                }
+                for(var i = 0; i < FU_SIZE; i++) {
+                    $('#editFloatRegister').append('<option value="'+i+'">F'+i+'</option>');
+                }
+            }
+            selectInit();
 
             updateBus(bus);
             redrawMem(bus.memory, memStart, memNum);
