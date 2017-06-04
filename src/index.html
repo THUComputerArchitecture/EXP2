@@ -22,6 +22,9 @@
 
         <!-- Add your site or application content here -->
         <p>Hello world! This is Tomasulo Boilerplate.<span id="timer"></span></p>
+        <button onclick="bus.plusOneSecond(null);updateBus(bus);">
+            +1s
+        </button>
         <table id="instArea" class="table">
 
         </table>
@@ -44,9 +47,7 @@
 
         </table>
 
-        <button onclick="bus.plusOneSecond(null);updateBus(bus,instList,memStart,memNum);">
-            +1s
-        </button>
+
         <script src="js/plugins.js"></script>
         <script src="js/defs.js"></script>
         <script src="js/redraw.js"></script>
@@ -68,17 +69,18 @@
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
 
             var bus = new BUS();
-            var instList = new Array(3);
             var memStart = 0;
             var memNum = 10;
-            instList[0] = new Instruction(iName.addd, 0,1,2);
-            instList[1] = new Instruction(iName.muld, 3,4,5);
-            instList[2] = new Instruction(iName.ld, 6,7,8);
-            updateBus(bus,instList);
+
+
+            updateBus(bus);
             redrawMem(bus.memory, memStart, memNum);
-            bus.plusOneSecond(instList);
+            bus.addInst(new Instruction(iName.addd, 1, 2, 3));
+            bus.addInst(new Instruction(iName.subd, 2, 1, 2));
+            bus.addInst(new Instruction(iName.st, 2, 0, 0));
+            /*bus.plusOneSecond();
             updateBus(bus,instList);
-            redrawMem(bus.memory, memStart, memNum);
+            redrawMem(bus.memory, memStart, memNum);*/
 
         </script>
     </body>

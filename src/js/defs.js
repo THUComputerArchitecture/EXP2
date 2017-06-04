@@ -180,7 +180,7 @@ var STORE_BUF_SIZE = 3;
 var FU_SIZE = 20;
 var ADD_STATION_SIZE = 3;
 var MUL_STATION_SIZE = 2;
-var INST_BUF_SIZE = 20;
+var INST_BUF_SIZE = 4096;
 
 function BUS(){
     this.init = function() {
@@ -191,7 +191,8 @@ function BUS(){
         this.mulStations = new Array(MUL_STATION_SIZE);
         this.instBuffer = new Array(INST_BUF_SIZE);
         this.memory = new Array(MEM_SIZE);
-
+        this.instPtr = 0;
+        this.instCnt = 0;
         this.curTime = 0;
 
         for (var i = 0; i < LOAD_BUF_SIZE; i++)
@@ -206,23 +207,19 @@ function BUS(){
             this.mulStations[i] = new ReservationStation();
         for (var i = 0; i < MEM_SIZE; i++)
             this.memory[i] = 0.0;
+        for (var i = 0; i < INST_BUF_SIZE; i++)
+            this.instBuffer[i] = null;
     };
     this.init();
     /*推进一个时钟周期
         执行顺序：issue -> checkExcute -> checkStart
      */
-    this.plusOneSecond = function(issueList){
-        if(issueList != null && !(issueList instanceof Array)){
-            console.log("issueList must be an Array!");
-            return;
+    this.plusOneSecond = function(){
+        var instruction = this.instBuffer[this.instPtr];
+        if(instruction != null) {
+            if(this.tryIssue(instruction))
+                this.instPtr++;
         }
-        if(issueList != null){
-            for(var i = 0; i < issueList.length; i++){
-                if(issueList[i] != null)
-                    console.log("issue " + i + " " + issueList[i].name  + " " + this.tryIssue(issueList[i]));
-            }
-        }
-
         this.checkExcute();
         this.checkStart();
         this.curTime ++;
@@ -233,6 +230,7 @@ function BUS(){
         if(instruction.name == iName.ld){
             return this.tryIssueLD(instruction);
         }else if(instruction.name == iName.st){
+            console.log('issue a st instruction');
             return this.tryIssueST(instruction);
         }else if(instruction.name == iName.addd || instruction.name == iName.subd){
             return this.tryIssueADD_SUB(instruction)
@@ -289,6 +287,7 @@ function BUS(){
                     this.storeBuffers[i].waitDev = this.FUs[src].waitDev;
                     this.storeBuffers[i].active = false;
                 }
+                console.log('there is ok');
                 return true;
             }
         }
@@ -388,7 +387,7 @@ function BUS(){
         for(var i = 0; i < STORE_BUF_SIZE; i++){
             var buffer = this.storeBuffers[i];
             // 检查是否被使用
-            if(!buffer.busy)
+            if(!buffer.busy || !buffer.active)
                 continue;
             // 检查是否执行完成
             if(buffer.remainingTime-- == 0){
@@ -396,7 +395,7 @@ function BUS(){
             }
             // 检查是否需要写回
             else if(buffer.remainingTime < 0){
-                buffer.instruction.writeTime = this.curTime;
+                buffer.instruction.resultTime = this.curTime;
                 this.memory[buffer.address] = buffer.value;
                 buffer.init();
             }
@@ -533,6 +532,27 @@ function BUS(){
             }
         }
     };
+
+    this.addInst = function(instruction){
+        if(this.instCnt >= INST_BUF_SIZE){
+            alert("指令不能超过" + INST_BUF_SIZE + "条！");
+            return;
+        }
+        else
+            this.instBuffer[this.instCnt++] = instruction;
+    }
+
+    this.delInst = function(index){
+        if(index >= this.instCnt){
+            alert("找不到指令"+index);
+            return;
+        }
+        if(this.instBuffer[index].issueTime != -1){
+            alert("不能删除已发射的指令");
+            return;
+        }
+        this.instBuffer.splice(index,1);
+    }
 }
 
 function caculate(operation, src1, src2){
