@@ -7,7 +7,7 @@ function updateBus(bus, insts, memStart, memNum){
     redrawMulStation(bus.mulStations);
     redrawStoreBuf(bus.storeBuffers);
     redrwaFU(bus.FUs);
-    redrawInst(insts);
+    redrawInst(bus.instBuffer, bus.instCnt);
     // or redrawInst(bus.insts);
     redrawTimer(bus.curTime);
 }
@@ -60,9 +60,9 @@ function redrwaFU(FUs){
     }
 }
 
-function redrawInst(insts){
+function redrawInst(insts, instCnt){
     $("#instArea").html(instHead);
-    for(i = 0; i < insts.length; i++){
+    for(i = 0; i < instCnt; i++){
         $("#instArea").append(insts[i].draw(i));
     }
 }
