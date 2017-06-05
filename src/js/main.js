@@ -7,4 +7,6 @@ function selectInit() {
     for(var i = 0; i < FU_SIZE; i++) {
         $('#editFloatRegister').append('<option value="'+i+'">F'+i+'</option>');
     }
+    $('.selectpicker').selectpicker();
+
 }

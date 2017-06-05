@@ -1,168 +1,243 @@
 <!doctype html>
 <html class="no-js" lang="" xmlns="http://www.w3.org/1999/html">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        <!-- Place favicon.ico in the root directory -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
 
-        <link rel="stylesheet" href="css/main.css">
-        <!-- Bootstrap -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-    </head>
-    <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+    <link rel="stylesheet" href="css/main.css">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-select.min.css" rel="stylesheet">
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
 
-        <!-- Add your site or application content here -->
-        <p>Hello world! This is Tomasulo Boilerplate.<span id="timer"></span></p>
-        <button onclick="bus.plusOneSecond(null);updateBus(bus);">
-            +1s
-        </button>
-        <p>
-            <input type="text" id="nsAhead">
-            <button onclick="nsAhead(parseInt($('#nsAhead').val()));updateBus(bus);">+ns</button>
-        </p>
-        <button onclick="save2file(bus);">save</button>
-        <p>
-            <input type="file" id="loadFile">
-            <button onclick="loadFromFile(bus, document.getElementById('loadFile').files[0]);">
-                load
-            </button>
-        </p>
-        <p>
-            <input type="text" id="bpInsIndex">
-            <button onclick="setBreakPoint(bus, parseInt($('#bpInsIndex').val()));">
-                set break point
-            </button>
-            <button onclick="runUntilBP(bus);updateBus(bus);">
-                run until break point
-            </button>
-        </p>
+<!-- Add your site or application content here -->
+<p>Hello world! This is Tomasulo Boilerplate.<span id="timer"></span></p>
 
-        <p>
-            <select id="newInsType"></select>
-            <input type="text" id="newInsDes">
-            <input type="text" id="newInsSrc0">
-            <input type="text" id="newInsSrc1">
-            <button onclick="addInstruction(bus, $('#newInsType').val(), $('#newInsDes').val(),
-                                $('#newInsSrc0').val(), $('#newInsSrc1').val());updateBus(bus);">
-                add new instruction
-            </button>
-        </p>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column" >
+            <div class="row clearfix" style="text-align: center">
+                <div class="col-md-4 column">
+                    <div>
+                        <div>
+                            <div>Input cylces to run</div>
+                            <input type="text" id="nsAhead" class="form-control">
+                        </div>
 
-        <p>
-            <input type="text" id="editInsIndex">
-            <select id="editInsType"></select>
-            <input type="text" id="editInsDes">
-            <input type="text" id="editInsSrc0">
-            <input type="text" id="editInsSrc1">
-            <button onclick="editInstruction(bus, parseInt($('#editInsIndex').val()), $('#editInsType').val(),
-                                                $('#editInsDes').val(), $('#editInsSrc0').val(),
-                                                $('#editInsSrc1').val());updateBus(bus)">
-                edit instruction
-            </button>
-        </p>
+                        <div style="margin-top: 5px">
+                            <button class="btn btn-primary" style="width: 48%;display: inline-block"
+                                    onclick="bus.plusOneSecond(null);updateBus(bus);">
+                                +1s
+                            </button>
+                            <button class="btn btn-primary" style="width: 48%;display: inline-block"
+                                    onclick="nsAhead(parseInt($('#nsAhead').val()));updateBus(bus);">+ns
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 column">
+                    <div style="vertical-align: top">
+                        <div>Save the instructions and status</div>
+                        <button style="width: 100%" onclick="save2file(bus);" class="btn btn-success">save</button>
+                    </div>
+                </div>
+                <div class="col-md-4 column">
+                    <div>
+                        <div>Load the instructions and status</div>
+                        <input type="file" id="loadFile">
+                        <button style="width: 100%;margin-top: 5px" class="btn btn-success"
+                                onclick="loadFromFile(bus, document.getElementById('loadFile').files[0]);">
+                            load
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row clearfix" style="text-align: center" >
+                <div class="col-md-4 column">
+                    <div>
+                        <input class="form-control" type="text" id="bpInsIndex">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"
+                                    onclick="setBreakPoint(bus, parseInt($('#bpInsIndex').val()));">
+                                set break point
+                            </button>
+                            <button class="btn btn-default" type="button" onclick="runUntilBP(bus);updateBus(bus);">
+                                run until break point
+                            </button>
+                        </span>
+                        <!-- /input-group -->
+                    </div>
+                </div>
+                <div class="col-md-4 column">
+                    <div>
+                        <div style="display: inline-block">
+                            <select id="newInsType" class="selectpicker"></select>
+                        </div>
+                        <div style="display: inline-block">
+                            <input class="form-control" type="text" id="newInsDes">
+                        </div>
+                        <div style="display: inline-block">
+                            <input class="form-control" type="text" id="newInsSrc0">
+                        </div>
+                        <div style="display: inline-block">
+                            <input class="form-control" type="text" id="newInsSrc1">
+                        </div>
+                        <div style="display: inline-block">
+                            <button class="btn btn-default" onclick="addInstruction(bus, $('#newInsType').val(), $('#newInsDes').val(),
+                                        $('#newInsSrc0').val(), $('#newInsSrc1').val());updateBus(bus);">
+                                add new instruction
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 column">
+                    <div>
+                        <input type="text" id="editInsIndex">
+                        <select id="editInsType"></select>
+                        <input type="text" id="editInsDes">
+                        <input type="text" id="editInsSrc0">
+                        <input type="text" id="editInsSrc1">
+                        <button onclick="editInstruction(bus, parseInt($('#editInsIndex').val()), $('#editInsType').val(),
+                                                        $('#editInsDes').val(), $('#editInsSrc0').val(),
+                                                        $('#editInsSrc1').val());updateBus(bus)">
+                            edit instruction
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row clearfix" style="text-align: center">
+            <div class="col-md-4 column">
+                <div>
+                    <input type="text" id="delInsNumber">
+                    <button onclick="deleteInstruction(bus, parseInt($('#delInsNumber').val()));updateBus(bus)">
+                        delete instruction
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 column">
+                <div>
+                    <select id="editFloatRegister"></select>
+                    <input id="editFRValue">
+                    <button onclick="editFloatRegisterValue(parseInt($('#editFloatRegister').val()),
+                                                    parseFloat($('#editFRValue').val()));updateBus(bus)">
+                        edit float register value
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 column">
+                <div>
+                    <input id="editMemAddress">
+                    <input id="editMemValue">
+                    <button onclick="var index = parseInt($('#editMemAddress').val());
+                                    editMemoryValue(index,parseFloat($('#editMemValue').val()));
+                                    redrawMem(bus.memory,index, 10);">
+                        edit memory value
+                    </button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+</div>
 
-        <p>
-            <input type="text" id="delInsNumber">
-            <button onclick="deleteInstruction(bus, parseInt($('#delInsNumber').val()));updateBus(bus)">
-                delete instruction
-            </button>
-        </p>
+<table id="instArea" class="table table-bordered">
 
-        <p>
-            <select id="editFloatRegister"></select>
-            <input id="editFRValue">
-            <button onclick="editFloatRegisterValue(parseInt($('#editFloatRegister').val()),
-                                                parseFloat($('#editFRValue').val()));updateBus(bus)">
-                edit float register value
-            </button>
-        </p>
-
-        <p>
-            <input id="editMemAddress">
-            <input id="editMemValue">
-            <button onclick="var index = parseInt($('#editMemAddress').val());
-                                editMemoryValue(index,parseFloat($('#editMemValue').val()));
-                                redrawMem(bus.memory,index, 10);">
-                edit memory value
-            </button>
-        </p>
-
-        <table id="instArea" class="table">
-
+</table>
+<div id="stations" class="stations">
+    <div class="tableContainer ">
+        <table id="addStationArea" class="table table-bordered">
         </table>
-        <table id="addStationArea" class="table">
-
+    </div>
+    <div class="tableContainer ">
+        <table id="mulStationArea" class="table table-bordered">
         </table>
-        <table id="mulStationArea" class="table">
-
+    </div>
+</div>
+<div id="buffers">
+    <div class="tableContainer ">
+        <table id="loadBufArea" class="table table-bordered">
         </table>
-        <table id="loadBufArea" class="table">
-
+    </div>
+    <div class="tableContainer ">
+        <table id="storeBufArea" class="table table-bordered">
         </table>
-        <table id="storeBufArea" class="table">
+    </div>
+</div>
+<div id="pipelines" class="pipelines">
+    <table id="addPipelineArea" class="table table-bordered">
+    </table>
+    <table id="mulPipelineArea" class="table table-bordered">
+    </table>
+</div>
 
-        </table>
-        <table id="addPipelineArea" class="table">
+<table id="FUArea" class="table table-bordered horizontalTable">
 
-        </table>
-        <table id="mulPipelineArea" class="table">
+</table>
+<table id="MemArea" class="table table-bordered horizontalTable">
 
-        </table>
-        <table id="FUArea" class="table">
+</table>
 
-        </table>
-        <table id="MemArea" class="table">
+<script src="js/FileSaver.js"></script>
+<script src="js/plugins.js"></script>
+<script src="js/defs.js"></script>
+<script src="js/redraw.js"></script>
+<script src="js/interactions.js"></script>
+<script src="js/main.js"></script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-select.js"></script>
+<script src="js/i18n/defaults-zh_CN.js"></script>
 
-        </table>
-
-        <script src="js/FileSaver.js"></script>
-        <script src="js/plugins.js"></script>
-        <script src="js/defs.js"></script>
-        <script src="js/redraw.js"></script>
-        <script src="js/interactions.js"></script>
-        <script src="js/main.js"></script>
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-        <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="js/bootstrap.min.js"></script>
-
-
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='https://www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X','auto');ga('send','pageview');
-            var bus = new BUS();
-            var memStart = 0;
-            var memNum = 10;
-            $(document).ready(function(){
-                selectInit();
-
-                updateBus(bus);
-                redrawMem(bus.memory, memStart, memNum);
-                bus.addInst(new Instruction(iName.addd, 1, 2, 3));
-                bus.addInst(new Instruction(iName.subd, 2, 1, 2));
-                bus.addInst(new Instruction(iName.st, 2, 0, 0));
-                updateBus(bus);
-                redrawMem(bus.memory, memStart, memNum);
-                /*bus.plusOneSecond();
-                 updateBus(bus,instList);
-                 redrawMem(bus.memory, memStart, memNum);*/
+<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+    (function (b, o, i, l, e, r) {
+        b.GoogleAnalyticsObject = l;
+        b[l] || (b[l] =
+            function () {
+                (b[l].q = b[l].q || []).push(arguments)
             });
+        b[l].l = +new Date;
+        e = o.createElement(i);
+        r = o.getElementsByTagName(i)[0];
+        e.src = 'https://www.google-analytics.com/analytics.js';
+        r.parentNode.insertBefore(e, r)
+    }(window, document, 'script', 'ga'));
+    ga('create', 'UA-XXXXX-X', 'auto');
+    ga('send', 'pageview');
+    var bus = new BUS();
+    var memStart = 0;
+    var memNum = 10;
+    $(document).ready(function () {
+        selectInit();
+
+        updateBus(bus);
+        redrawMem(bus.memory, memStart, memNum);
+        bus.addInst(new Instruction(iName.addd, 1, 2, 3));
+        bus.addInst(new Instruction(iName.subd, 2, 1, 2));
+        bus.addInst(new Instruction(iName.st, 2, 0, 0));
+        updateBus(bus);
+        redrawMem(bus.memory, memStart, memNum);
+        /*bus.plusOneSecond();
+         updateBus(bus,instList);
+         redrawMem(bus.memory, memStart, memNum);*/
+    });
 
 
-        </script>
-    </body>
+</script>
+</body>
 </html>

@@ -97,10 +97,7 @@ var stationHead = '<tr>' +
     '<th>Q1</th>' +
     '<th>V2</th>' +
     '<th>Q1</th>' +
-    '<th>Result</th>' +
     '<th>Busy</th>' +
-    '<th>Active</th>' +
-    '<th>RemianingTime</th>' +
     '</tr>';
 
 var loadBufHead = '<tr>' +

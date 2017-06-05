@@ -77,7 +77,7 @@ function Instruction(name,src0, src1, src2){
     this.draw = function(id){
         var html =
                 '<tr id="'+ devName.inst + "_" + id + '">'  +
-                '<td>instruction' +
+                '<td>instruction'+ id +
                 '<td>' + this.name +
                 '<td>' + this.src0 +
                 '<td>' + this.src1 +
@@ -96,7 +96,7 @@ function LoadBuffer(){
     this.draw = function(id){
         var html =
             '<tr id="'+ devName.ld + "_" + id + '">'  +
-            '<td>LoadBuffer' +
+            '<td>LoadBuffer'+ id +
             '<td>' + this.busy +
             '<td>' + this.address +
             '<td>' + this.value +
@@ -119,7 +119,7 @@ function StoreBuffer(){
     this.draw = function(id){
         var html =
             '<tr id="'+ devName.st + "_" + id + '">'  +
-            '<td>StoreBuffer' +
+            '<td>StoreBuffer'+ id +
             '<td>' + this.busy +
             '<td>' + this.address +
             '<td>' + this.value +
@@ -158,16 +158,13 @@ function ReservationStation(){
     this.draw = function(id,type){
         var html =
             '<tr id="'+ type + "_" + id + '">'  +
-            '<td>' + type   +
+            '<td>' + type + id  +
             '<td>' + this.op +
             '<td>' + this.v1 +
             '<td>' + this.q1 +
             '<td>' + this.v2 +
             '<td>' + this.q2 +
-            '<td>' + this.result +
             '<td>' + this.busy +
-            '<td>' + this.active +
-            '<td>' + this.remainingTime +
             '</tr>' ;
 
         return html;
@@ -183,7 +180,7 @@ function FU(){
     this.draw = function(id){
         var html =
             '<tr id="'+ devName.FU + "_" + id + '">'  +
-            '<td>FU' +
+            '<td>FU'+ id +
             '<td>' + this.waitDev +
             '<td>' + this.value +
             '</tr>' ;
