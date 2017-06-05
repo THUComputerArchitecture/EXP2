@@ -55,6 +55,8 @@ function Instruction(name,src0, src1, src2){
     this.issueTime = -1;     //完成 issue, excute, result 的时间
     this.excuteTime = -1;
     this.resultTime = -1;
+    this.breakpoint = false;
+    this.ready = false;
 
     this.draw = function(id){
         var html =
@@ -177,7 +179,7 @@ function FU(){
 
 var LOAD_BUF_SIZE = 3;
 var STORE_BUF_SIZE = 3;
-var FU_SIZE = 20;
+var FU_SIZE = 11;
 var ADD_STATION_SIZE = 3;
 var MUL_STATION_SIZE = 2;
 var INST_BUF_SIZE = 4096;
@@ -215,14 +217,25 @@ function BUS(){
         执行顺序：issue -> checkExcute -> checkStart
      */
     this.plusOneSecond = function(){
+        var flag = true;
         var instruction = this.instBuffer[this.instPtr];
         if(instruction != null) {
             if(this.tryIssue(instruction))
+            {
+                if(instruction.ready && instruction.breakpoint)
+                    flag = false;
                 this.instPtr++;
+            }
         }
+        //console.log('flag is ?'+flag);
         this.checkExcute();
-        this.checkStart();
+        if(!this.checkStart())
+            flag = false;
+        //console.log('flag1 is ?'+flag);
         this.curTime ++;
+        if(this.curTime >= 100)
+            flag = false;
+        return flag;
     };
 
     // 尝试发射一条指令，返回成功与否(是否存在结构冲突）
@@ -230,7 +243,7 @@ function BUS(){
         if(instruction.name == iName.ld){
             return this.tryIssueLD(instruction);
         }else if(instruction.name == iName.st){
-            console.log('issue a st instruction');
+            //console.log('issue a st instruction');
             return this.tryIssueST(instruction);
         }else if(instruction.name == iName.addd || instruction.name == iName.subd){
             return this.tryIssueADD_SUB(instruction)
@@ -253,6 +266,7 @@ function BUS(){
                 this.loadBuffers[i].value = 0;
                 this.loadBuffers[i].instruction = instruction;
                 this.loadBuffers[i].remainingTime = CC.st + 1; // +1因为接下来立即会执行
+                instruction.ready = true;
                 instruction.issueTime = this.curTime;
                 // 声明写回寄存器
                 var dest = instruction.src0;
@@ -287,7 +301,7 @@ function BUS(){
                     this.storeBuffers[i].waitDev = this.FUs[src].waitDev;
                     this.storeBuffers[i].active = false;
                 }
-                console.log('there is ok');
+                //.log('there is ok');
                 return true;
             }
         }
@@ -493,23 +507,33 @@ function BUS(){
 
     // 检查哪些设备可以开始执行
     this.checkStart = function(){
-        this.startAdd();
-        this.startMul();
-        this.startStore();
+        var flag = true;
+        if(!this.startAdd())
+            flag = false;
+        if(!this.startMul())
+            flag = false;
+        if(!this.startStore())
+            flag = false;
+        return flag;
     };
 
     this.startStore = function(){
+        var flag = true;
         for(var i = 0; i < STORE_BUF_SIZE; i++){
             if(!this.storeBuffers[i].busy || this.storeBuffers[i].active)
                 continue;
             if(this.storeBuffers[i].waitDev == null && this.storeBuffers[i].active == false){
                 this.storeBuffers[i].active = true;
                 this.storeBuffers[i].remainingTime = CC.st;
+                if(this.storeBuffers[i].instruction.breakpoint)
+                    flag = false;
             }
         }
+        return flag;
     };
 
     this.startAdd = function(){
+        var flag = true;
         for(var i = 0; i < ADD_STATION_SIZE; i++) {
             var station = this.addStations[i];
             if(!station.busy || station.active)
@@ -517,11 +541,15 @@ function BUS(){
             if(station.q1 == null && station.q2 == null){
                 station.active = true;
                 station.remainingTime = op2Time[station.op];
+                if(station.instruction.breakpoint)
+                    flag = false;
             }
         }
+        return flag;
     };
 
     this.startMul = function(){
+        var flag = true;
         for(var i = 0; i < MUL_STATION_SIZE; i++) {
             var station = this.mulStations[i];
             if(!station.busy || station.active)
@@ -529,8 +557,11 @@ function BUS(){
             if(station.q1 == null && station.q2 == null){
                 station.active = true;
                 station.remainingTime = op2Time[station.op];
+                if(station.instruction.breakpoint)
+                    flag = false;
             }
         }
+        return flag;
     };
 
     this.addInst = function(instruction){
@@ -540,6 +571,13 @@ function BUS(){
         }
         else
             this.instBuffer[this.instCnt++] = instruction;
+    }
+
+    this.editInst = function (index, type, des, src0, src1) {
+        this.instBuffer[index].name = type;
+        this.instBuffer[index].src0 = des;
+        this.instBuffer[index].src1 = src0;
+        this.instBuffer[index].src2 = src1;
     }
 
     this.delInst = function(index){
