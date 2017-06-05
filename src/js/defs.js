@@ -2,6 +2,12 @@
  * Created by Administrator on 2017/6/3 0003.
  */
 var MEM_SIZE = 4096;
+var ADD_PIPELINE_STAGE_NUM = 2;
+var ADD_PIPELINE_STAGE_CCs = [1,1,1];       //为方便起见，将写回周期看作是流水线的一部分
+var MUL_PIPELINE_STAGE_NUM = 6;
+var MUL_PIPELINE_STAGE_CCs = [1,2,2,2,2,2,1,1];
+var DIV_PIPELINE_STAGE_NUM = 6;
+var DIV_PIPELINE_STAGE_CCs = [6,7,7,7,7,7,6,1];
 
 function memDraw(index, value) {
     html = '<tr id="' + devName.mem + "_" + index + '">' +
@@ -39,6 +45,11 @@ var CC = {              // 操作耗时
     st : 2
 };
 
+var pipeLineNames = {
+    add : "AddSubPipeline",
+    mul : "mulDivPipeline"
+};
+
 var op2Time = {};
 op2Time[iName.addd] = CC.add;
 op2Time[iName.subd] = CC.sub;
@@ -52,11 +63,16 @@ function Instruction(name,src0, src1, src2){
     this.src0 = src0;
     this.src1 = src1;
     this.src2 = src2;
-    this.issueTime = -1;     //完成 issue, excute, result 的时间
-    this.excuteTime = -1;
+    this.issueTime = -1;     //完成 issue, execute, result 的时间
+    this.executeTime = -1;
     this.resultTime = -1;
     this.breakpoint = false;
     this.ready = false;
+    this.val0 = -1;         //操作数的实际值
+    this.val1 = -1;
+    this.val2 = -1;
+    this.result = -1;       //运算结果
+    this.WBDev = null;      //经过重命名后，写回的目标名
 
     this.draw = function(id){
         var html =
@@ -67,7 +83,7 @@ function Instruction(name,src0, src1, src2){
                 '<td>' + this.src1 +
                 '<td>' + this.src2 +
                 '<td>' + this.issueTime +
-                '<td>' + this.excuteTime +
+                '<td>' + this.executeTime +
                 '<td>' + this.resultTime +
                 '</tr>' ;
 
@@ -163,7 +179,7 @@ function FU(){
     this.init = function(){
         this.waitDev = null;         // 如果有指令预定写回到该寄存器，则该变量为指令所在部件的名字
         this.value = 0.0;
-    }
+    };
     this.draw = function(id){
         var html =
             '<tr id="'+ devName.FU + "_" + id + '">'  +
@@ -173,8 +189,89 @@ function FU(){
             '</tr>' ;
 
         return html;
-    }
+    };
     this.init();
+}
+
+function Pipeline(bus, stageNum, name){
+    this.bus = bus;
+    this.stageNum = stageNum;
+    this.name = name;
+    this.init = function(){
+        this.stagesInsts = new Array(this.stageNum);    //在各流水段的指令
+        this.stageTime = new Array(this.stageNum);
+        for(var i = 0; i < this.stageNum; i++){
+            this.stagesInsts[i] = null;
+            this.stageTime[i] = -1;
+        }
+    };
+
+    this.canIssue = function(){
+        return this.stagesInsts[0] == null;
+    };
+    this.issue = function(instruction){
+        this.stagesInsts[0] = instruction;
+        this.stageTime[0] = getStageCC(instruction.name, 0);
+    };
+    this.execute = function(){
+        for(var i = this.stageNum; i >= 0; i--){    //从后向前遍历流水线
+            if(this.stagesInsts[i] != null){    //不为空则执行一个周期
+                this.stageTime[i] -= 1;
+            }else
+                continue;
+            if(this.stageTime[i] <= 0){               //指令已经执行完一个段
+                if(i == this.stageNum){               //指令已经完成写回周期
+                    this.bus.emitWrite(this.stagesInsts[i].WBDev, this.stagesInsts[i].result);
+                    this.stagesInsts[i].resultTime = this.bus.curTime;
+                    this.stagesInsts[i] = null;
+                    this.stageTime[i] = -1;
+                }
+                else if(i == this.stageNum - 1){    //指令完成运算,进入写回阶段
+                    this.stagesInsts[i].result = caculate(this.stagesInsts[i].name,
+                                                            this.stagesInsts[i].val1,
+                                                            this.stagesInsts[i].val2);
+                    this.stagesInsts[i].executeTime = this.bus.curTime;
+                    this.stagesInsts[i+1] = this.stagesInsts[i];
+                    this.stageTime[i+1] = getStageCC(this.stagesInsts[i].name, i+1);
+                    this.stagesInsts[i] = null;
+                    this.stageTime[i] = -1;
+                }
+                else if(this.stagesInsts[i+1] == null){     //下一个流水段可用，转移到下一个段
+                    this.stagesInsts[i+1] = this.stagesInsts[i];
+                    this.stageTime[i+1] = getStageCC(this.stagesInsts[i].name, i+1);
+                    this.stagesInsts[i] = null;
+                    this.stageTime[i] = -1;
+                }
+                //否则停留在当前流水段
+            }
+        }
+    };
+    this.draw = function(){
+        var html = '<tr><th>Pipeline Name</th>';
+        for(var i = 0; i <= this.stageNum; i++){
+            html += '<th>stage' + i + '</th>';
+        }
+        html += '</tr>';
+        html += '<tr><td>'+ this.name + '</td>';
+        for(var i = 0; i <= this.stageNum; i++){
+            if(this.stagesInsts[i] == null)
+                html += '<td>' +  'null' + '</td>';
+            else
+                html += '<td>' +  this.stagesInsts[i].name + '</td>';
+        }
+        html += '</tr>';
+        return html;
+    };
+    this.init();
+}
+
+function getStageCC(instName, stageNum){
+    if(instName == iName.addd || instName == iName.subd)
+        return ADD_PIPELINE_STAGE_CCs[stageNum];
+    else if(instName == iName.mul)
+        return MUL_PIPELINE_STAGE_CCs[stageNum];
+    else
+        return DIV_PIPELINE_STAGE_CCs[stageNum];
 }
 
 var LOAD_BUF_SIZE = 3;
@@ -193,9 +290,12 @@ function BUS(){
         this.mulStations = new Array(MUL_STATION_SIZE);
         this.instBuffer = new Array(INST_BUF_SIZE);
         this.memory = new Array(MEM_SIZE);
+        this.addPipeline = new Pipeline(this, ADD_PIPELINE_STAGE_NUM, pipeLineNames.add);
+        this.mulDivPipeline = new Pipeline(this, MUL_PIPELINE_STAGE_NUM, pipeLineNames.mul);
         this.instPtr = 0;
         this.instCnt = 0;
         this.curTime = 0;
+        this.issuedCount = 0;       //采用流水线后，重命名的寄存器个数可能大于保留站个数，因此需要加以扩展
 
         for (var i = 0; i < LOAD_BUF_SIZE; i++)
             this.loadBuffers[i] = new LoadBuffer();
@@ -214,7 +314,7 @@ function BUS(){
     };
     this.init();
     /*推进一个时钟周期
-        执行顺序：issue -> checkExcute -> checkStart
+        执行顺序：issue -> checkexecute -> checkStart
      */
     this.plusOneSecond = function(){
         var flag = true;
@@ -228,7 +328,7 @@ function BUS(){
             }
         }
         //console.log('flag is ?'+flag);
-        this.checkExcute();
+        this.checkexecute();
         if(!this.checkStart())
             flag = false;
         //console.log('flag1 is ?'+flag);
@@ -270,7 +370,7 @@ function BUS(){
                 instruction.issueTime = this.curTime;
                 // 声明写回寄存器
                 var dest = instruction.src0;
-                this.FUs[dest].waitDev = devName.load + "_" + i;
+                this.FUs[dest].waitDev = devName.load + "_" + this.issuedCount++ + "_"+ i;
                 return true;
             }
         }
@@ -332,7 +432,8 @@ function BUS(){
                 }
                 // 声明写回目的寄存器
                 var dest = instruction.src0;
-                this.FUs[dest].waitDev = devName.add+"_"+ i;
+                this.FUs[dest].waitDev = devName.add+ "_" + this.issuedCount++ + "_"+ i;
+                instruction.WBDev = this.FUs[dest].waitDev;
                 return true;
             }
         }
@@ -362,7 +463,8 @@ function BUS(){
                     availableCnt++;
                 }
                 var dest = instruction.src0;
-                this.FUs[dest].waitDev = devName.mul+"_"+ i;
+                this.FUs[dest].waitDev = devName.mul+ "_" + this.issuedCount++ + "_"+ i;
+                instruction.WBDev = this.FUs[dest].waitDev;
                 return true;
             }
         }
@@ -370,14 +472,14 @@ function BUS(){
     };
 
     // 使得所有开始运算的部件推进一个周期
-    this.checkExcute = function(){
-        this.excuteAdd();
-        this.excuteLoad();
-        this.excuteMul();
-        this.excuteStore();
+    this.checkexecute = function(){
+        this.executeAdd();
+        this.executeLoad();
+        this.executeMul();
+        this.executeStore();
     };
 
-    this.excuteLoad = function(){
+    this.executeLoad = function(){
         for(var i = 0; i < LOAD_BUF_SIZE; i++){
             var buffer = this.loadBuffers[i];
             // 检查是否被使用
@@ -386,7 +488,7 @@ function BUS(){
             // 检查是否执行完成
             if(buffer.remainingTime-- == 0){
                 buffer.value = this.memory[buffer.address];
-                buffer.instruction.excuteTime = this.curTime;
+                buffer.instruction.executeTime = this.curTime;
             }
             // 检查是否需要写回
             else if(buffer.remainingTime < 0){
@@ -397,7 +499,7 @@ function BUS(){
         }
     };
 
-    this.excuteStore = function(){
+    this.executeStore = function(){
         for(var i = 0; i < STORE_BUF_SIZE; i++){
             var buffer = this.storeBuffers[i];
             // 检查是否被使用
@@ -405,7 +507,7 @@ function BUS(){
                 continue;
             // 检查是否执行完成
             if(buffer.remainingTime-- == 0){
-                buffer.instruction.excuteTime = this.curTime;
+                buffer.instruction.executeTime = this.curTime;
             }
             // 检查是否需要写回
             else if(buffer.remainingTime < 0){
@@ -416,44 +518,12 @@ function BUS(){
         }
     };
 
-    this.excuteAdd = function(){
-        for(var i = 0; i < ADD_STATION_SIZE; i++){
-            var station = this.addStations[i];
-            //检查是否正在执行运算
-            if(!station.busy || !station.active)
-                continue;
-            // 检查是否执行完成
-            if(station.remainingTime-- == 0){
-                station.instruction.excuteTime = this.curTime;
-                station.result = caculate(station.op, station.v1, station.v2);
-            }
-            // 检查是否需要写回
-            else if(station.remainingTime < 0){
-                station.instruction.resultTime = this.curTime;
-                this.emitWrite(devName.add + "_" + i, station.result);
-                station.init();
-            }
-        }
+    this.executeAdd = function(){
+        this.addPipeline.execute();
     };
 
-    this.excuteMul = function(){
-        for(var i = 0; i < MUL_STATION_SIZE; i++){
-            var station = this.mulStations[i];
-            //检查是否正在执行运算
-            if(!station.busy || !station.active)
-                continue;
-            // 检查是否执行完成
-            if(station.remainingTime-- == 0){
-                station.instruction.excuteTime = this.curTime;
-                station.result = caculate(station.op, station.v1, station.v2);
-            }
-            // 检查是否需要写回
-            else if(station.remainingTime < 0){
-                station.instruction.resultTime = this.curTime;
-                this.emitWrite(devName.mul + "_" + i, station.result);
-                station.init();
-            }
-        }
+    this.executeMul = function(){
+        this.mulDivPipeline.execute();
     };
 
     // 广播一个写回消息，检查所有可能需要该资源的设备
@@ -536,12 +606,17 @@ function BUS(){
         var flag = true;
         for(var i = 0; i < ADD_STATION_SIZE; i++) {
             var station = this.addStations[i];
-            if(!station.busy || station.active)
+            if(!station.busy)
                 continue;
+            var instruction = station.instruction;
             if(station.q1 == null && station.q2 == null){
-                station.active = true;
-                station.remainingTime = op2Time[station.op];
-                if(station.instruction.breakpoint)
+                if(this.addPipeline.canIssue()){        //尝试将指令发射到流水线中
+                    station.instruction.val1 = station.v1;
+                    station.instruction.val2 = station.v2;
+                    this.addPipeline.issue(station.instruction);
+                    station.init();
+                }
+                if(instruction.breakpoint)
                     flag = false;
             }
         }
@@ -552,14 +627,17 @@ function BUS(){
         var flag = true;
         for(var i = 0; i < MUL_STATION_SIZE; i++) {
             var station = this.mulStations[i];
-            if(!station.busy || station.active)
+            if(!station.busy)
                 continue;
-            if(station.q1 == null && station.q2 == null){
-                station.active = true;
-                station.remainingTime = op2Time[station.op];
-                if(station.instruction.breakpoint)
-                    flag = false;
+            var instruction = station.instruction;
+            if(this.mulDivPipeline.canIssue()){        //尝试将指令发射到流水线中
+                station.instruction.val1 = station.v1;
+                station.instruction.val2 = station.v2;
+                this.mulDivPipeline.issue(station.instruction);
+                station.init();
             }
+            if(instruction.breakpoint)
+                flag = false;
         }
         return flag;
     };

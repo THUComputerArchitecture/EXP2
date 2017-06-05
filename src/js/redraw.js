@@ -10,6 +10,8 @@ function updateBus(bus, insts, memStart, memNum){
     redrawInst(bus.instBuffer, bus.instCnt);
     // or redrawInst(bus.insts);
     redrawTimer(bus.curTime);
+    redrawAddPipeline(bus.addPipeline);
+    redrawMulDivPipeLine(bus.mulDivPipeline);
 }
 
 
@@ -63,9 +65,19 @@ function redrwaFU(FUs){
 function redrawInst(insts, instCnt){
     $("#instArea").html(instHead);
     for(i = 0; i < instCnt; i++){
-        $("#instArea").append(insts[i].draw(i));
+        if(insts[i] != null)
+            $("#instArea").append(insts[i].draw(i));
     }
 }
+
+function redrawAddPipeline(pipeline){
+    $("#addPipelineArea").html(pipeline.draw());
+}
+
+function redrawMulDivPipeLine(pipeline){
+    $("#mulPipelineArea").html(pipeline.draw());
+}
+
 
 var instHead = '<tr>' +
     '<th>Type</th>' +
