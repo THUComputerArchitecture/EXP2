@@ -123,6 +123,7 @@ function save2file(bus) {
 }
 
 function loadFromFile(updateBus) {
+    bus.init();
     var file = document.getElementById('select-file-btn').files[0];
     if(typeof(file) == 'undefined') {
         myAlert('请先选择导入文件');
