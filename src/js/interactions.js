@@ -1,33 +1,104 @@
 /**
  * Created by Administrator on 2017/6/4 0004.
  */
-function addInstruction(bus, type, des, src0, src1) {
-    bus.addInst(new Instruction(type, des, src0, src1));
-//    console.log("add success");
+function addInstruction() {
+    var type = $('#newInsType').val();
+    var frIndex =  $('#newInsDes').val();
+    if(!checkNoNegInt(frIndex)) return;
+    frIndex = parseInt(frIndex);
+    if(!checkFrIndex(frIndex)) return;
+    var src0,src1;
+    if(isASMDinsType(type)) {
+        src0 = $('#newInsSrc0').val();
+        if(!checkNoNegInt(src0)) return;
+        src0 = parseInt(src0);
+        if(!checkFrIndex(src0)) return;
+        src1 = $('#newInsSrc1').val();
+        if(!checkNoNegInt(src1)) return;
+        src1 = parseInt(src1);
+        if(!checkFrIndex(src1)) return;
+        if(src0 == src1) {
+            myAlert('加减乘除指令的两个源操作寄存器不能相同');
+            return;
+        }
+    } else if(isLSinsType(type)) {
+        src0 = $('#newInsSrc0').val();
+        if(!checkNoNegInt(src0)) return;
+        src0 = parseInt(src0);
+        if(!checkMemoryIndex(src0)) return;
+        src1 = null;
+    }
+    bus.addInst(new Instruction(type, frIndex, src0, src1));
 }
 
-function editInstruction(bus, index, type, des, src0, src1) {
-    if(bus.instBuffer[index].issueTime != -1)
+function editInstruction() {
+    var insIndex =  $('#editInsIndex').val();
+    if(!checkNoNegInt(insIndex)) return;
+    insIndex = parseInt(insIndex);
+    if(!checkInsIndex(insIndex)) return;
+    var type = $('#editInsType').val();
+    var frIndex =  $('#editInsDes').val();
+    if(!checkNoNegInt(frIndex)) return;
+    frIndex = parseInt(frIndex);
+    if(!checkFrIndex(frIndex)) return;
+    var src0,src1;
+    if(isASMDinsType(type)) {
+        src0 = $('#editInsSrc0').val();
+        if(!checkNoNegInt(src0)) return;
+        src0 = parseInt(src0);
+        if(!checkFrIndex(src0)) return;
+        src1 = $('#editInsSrc1').val();
+        if(!checkNoNegInt(src1)) return;
+        src1 = parseInt(src1);
+        if(!checkFrIndex(src1)) return;
+        if(src0 == src1) {
+            myAlert('加减乘除指令的两个源操作寄存器不能相同');
+            return;
+        }
+    } else if(isLSinsType(type)) {
+        src0 = $('#editInsSrc0').val();
+        if(!checkNoNegInt(src0)) return;
+        src0 = parseInt(src0);
+        if(!checkMemoryIndex(src0)) return;
+        src1 = null;
+    }
+    if(bus.instBuffer[insIndex].issueTime != -1)
         alert('指令已执行，无法修改！');
     else
-        bus.editInst(index, type, des, src0, src1);
+        bus.editInst(insIndex, type, frIndex, src0, src1);
 }
 
-function deleteInstruction(bus, index) {
-    if(bus.instBuffer[index].issueTime != -1)
-        alert('指令已执行，无法删除！');
+function deleteInstruction() {
+    var insIndex = $('#delInsNumber').val();
+    if(!checkNoNegInt(insIndex)) return;
+    insIndex = parseInt(insIndex);
+    if(!checkInsIndex(insIndex)) return;
+    if(bus.instBuffer[insIndex].issueTime != -1)
+        myAlert('指令已执行，无法删除！');
     else
-        bus.delInst(index);
+        bus.delInst(insIndex);
 }
 
-function editFloatRegisterValue(index, value) {
-    //console.log('index is ? ='+index);
-    bus.FUs[index].value = value;
+function editFloatRegisterValue() {
+    var frIndex = $('#editFloatRegister').val();
+    if(!checkNoNegInt(frIndex)) return;
+    frIndex = parseInt(frIndex);
+    if(!checkFrIndex(frIndex)) return;
+    var value = $('#editFRValue').val();
+    if(!checkFloat(value)) return;
+    bus.FUs[frIndex].value = value;
 }
 
-function editMemoryValue(addr, value) {
-    console.log('addr is '+addr);
-    bus.memory[addr] = value;
+function editMemoryValue(redrawMem) {
+    var memIndex = $('#editMemAddress').val();
+    if(!checkNoNegInt(memIndex)) return;
+    memIndex = parseInt(memIndex);
+    if(!checkMemoryIndex(memIndex)) return;
+    var value = $('#editMemValue').val();
+    if(!checkFloat(value)) return;
+    value = parseFloat(value);
+    bus.memory[memIndex] = value;
+    redrawMem(bus.memory,memIndex, 1);
 }
 
 function save2file(bus) {
@@ -52,7 +123,12 @@ function save2file(bus) {
     saveAs(blob, "save.txt");//saveAs(blob,filename)
 }
 
-function loadFromFile(bus, file) {
+function loadFromFile(updateBus) {
+    var file = document.getElementById('loadFile').files[0];
+    if(typeof(file) == 'undefined') {
+        myAlert('请先选择导入文件');
+        return;
+    }
     var reader = new FileReader();
     reader.readAsText(file);
     reader.onload = function () {
@@ -72,18 +148,129 @@ function loadFromFile(bus, file) {
         for(var i = 0; i < INST_BUF_SIZE; i++) {
             bus.memory[i] = parseFloat(data[++off]);
         }
+        updateBus(bus);
     }
 }
 
-function nsAhead(n) {
-    for(var i = 0; i < n; i++)
+function nsAhead() {
+    var nCycle = $('#nsAhead').val();
+    if(!checkPosInt(nCycle)) return;
+    for(var i = 0; i < parseInt(nCycle); i++)
         bus.plusOneSecond();
 }
 
-function setBreakPoint(bus, index) {
-    bus.instBuffer[index].breakpoint = true;
+function setBreakPoint() {
+    var insIndex = $('#bpInsIndex').val();
+    if(!checkNoNegInt(insIndex)) return;
+    insIndex = parseInt(insIndex);
+    if(!checkInsIndex(insIndex)) return;
+    bus.instBuffer[insIndex].breakpoint = true;
 }
 
 function runUntilBP(bus) {
     while(bus.plusOneSecond()){};
+}
+
+function checkPosInt(input) {
+    var r = /^[1-9][0-9]*$/;　　//正整数
+    if(r.test(input))
+        return true;
+    else {
+        myAlert('请输入正整数');
+        return false;
+    }
+}
+
+function checkNoNegInt(input) {
+    var r = /^[0-9]+$/;　　//非负整数
+    if(r.test(input))
+        return true;
+    else {
+        myAlert('请输入非负整数');
+        return false;
+    }
+}
+
+function myAlert(content) {
+    alert(content);
+}
+
+function checkInsIndex(index) {
+    if(index < bus.instCnt)
+        return true;
+    else {
+        myAlert('请输入正确的指令序号');
+        return false;
+    }
+}
+
+function changeInsAddInputForm() {
+    var type = $('#newInsType').val();
+    if(isASMDinsType(type))
+        $('#newInsSrc1').attr('disabled',false);
+    else if(isLSinsType(type)) {
+        $('#newInsSrc1').val('');
+        $('#newInsSrc1').attr('disabled',true);
+    }
+}
+
+function checkFrIndex(index) {
+    if(index < FU_SIZE)
+        return true;
+    else {
+        myAlert('请输入正确的浮点寄存器序号');
+        return false;
+    }
+}
+
+function isASMDinsType(type) {
+    return type == iName.addd || type == iName.subd || type == iName.muld || type == iName.divd;
+}
+
+function isLSinsType(type) {
+    return type == iName.ld || type == iName.st;
+}
+
+function checkMemoryIndex(index) {
+    if(index < INST_BUF_SIZE)
+        return true;
+    else {
+        myAlert('请输入正确的内存地址');
+        return false;
+    }
+}
+
+function checkFloat(input) {
+    var r = /^-?[0-9]+(.[0-9]+)?$/;　　//浮点数
+    if(r.test(input))
+        return true;
+    else {
+        myAlert('请输入浮点数');
+        return false;
+    }
+}
+
+function changeInsEditInputForm() {
+    var type = $('#editInsType').val();
+    if(isASMDinsType(type))
+        $('#editInsSrc1').attr('disabled',false);
+    else if(isLSinsType(type)) {
+        $('#editInsSrc1').val('');
+        $('#editInsSrc1').attr('disabled',true);
+    }
+}
+
+function showMemory(redrawMem) {
+    var memIndex = $('#showMemAddress').val();
+    if(!checkNoNegInt(memIndex)) return;
+    memIndex = parseInt(memIndex);
+    if(!checkMemoryIndex(memIndex)) return;
+    var number = $('#showMemNumber').val();
+    if(!checkPosInt(number)) return;
+    number = parseInt(number);
+    if(memIndex + number >= INST_BUF_SIZE){
+        myAlert('显示地址超过内存上限');
+        return;
+    }
+    redrawMem(bus.memory, memIndex, number);
 }
