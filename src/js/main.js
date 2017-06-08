@@ -239,6 +239,15 @@ function confirmDeleteInst(node) {
         table.row(parent).remove().draw();
         $(".inst-row").attr("ondblclick", 'modifyInst(this)');
         updateBus(bus);
+    } else {
+        $(parent).find(".inst-type").html(instType_backup);
+        $(parent).find(".inst-src0").html(src0_backup);
+        $(parent).find(".inst-src1").html(src1_backup);
+        $(parent).find(".inst-src2").html(src2_backup);
+        $(parent).find(".inst-modify-btns-panel").remove();
+        $(parent).append(generateInstResultPart());
+        $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+        return false;
     }
 }
 
@@ -267,7 +276,7 @@ function confirmModifyFuValue(node) {
     if(!checkNoNegInt(value)) {
         return;
     }
-    bus.Fus[parseInt(address)].value = parseInt(value);
+    bus.FUs[parseInt(address)].value = parseInt(value);
     $(parent).find(".fu-value").html(value);
     $(".fu-row").attr("ondblclick", 'modifyFu(this)');
 }
