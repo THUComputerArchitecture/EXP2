@@ -49,6 +49,7 @@ function modifyInst(node) {
     $(node).find(".inst-src1").html(generateInstSrcHtml(src1));
     $(node).find(".inst-src2").html(generateInstSrcHtml(src2));
     $(node).find(".instructions-result-part").remove();
+
     $(node).append(generateInstModifyBtn());
 }
 
