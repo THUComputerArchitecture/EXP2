@@ -2,18 +2,19 @@
  * Created by Administrator on 2017/6/4 0004.
  */
 function addInstruction() {
-    var type = $('#newInsType').val();
-    var frIndex =  $('#newInsDes').val();
+    var type = $('#new-instruction-type-selector').val();
+    var frIndex =  $('#new-instruction-src0-selector').val();
     if(!checkNoNegInt(frIndex)) return;
     frIndex = parseInt(frIndex);
     if(!checkFrIndex(frIndex)) return;
     var src0,src1;
     if(isASMDinsType(type)) {
-        src0 = $('#newInsSrc0').val();
+        src0 = $('#new-instruction-src1-selector').val();
         if(!checkNoNegInt(src0)) return;
         src0 = parseInt(src0);
         if(!checkFrIndex(src0)) return;
-        src1 = $('#newInsSrc1').val();
+        src1 = $('#new-instruction-src2-selector').val();
+        console.log(src1);
         if(!checkNoNegInt(src1)) return;
         src1 = parseInt(src1);
         if(!checkFrIndex(src1)) return;
@@ -22,7 +23,7 @@ function addInstruction() {
             return;
         }
     } else if(isLSinsType(type)) {
-        src0 = $('#newInsSrc0').val();
+        src0 = $('#new-instruction-src1-selector').val();
         if(!checkNoNegInt(src0)) return;
         src0 = parseInt(src0);
         if(!checkMemoryIndex(src0)) return;
@@ -31,41 +32,36 @@ function addInstruction() {
     bus.addInst(new Instruction(type, frIndex, src0, src1));
 }
 
-function editInstruction() {
-    var insIndex =  $('#editInsIndex').val();
-    if(!checkNoNegInt(insIndex)) return;
+function editInstruction(insIndex, type, frIndex, src0, src1) {
+    console.log(insIndex,type,frIndex,src0,src1);
+    if(!checkNoNegInt(insIndex)) return false;
     insIndex = parseInt(insIndex);
-    if(!checkInsIndex(insIndex)) return;
-    var type = $('#editInsType').val();
-    var frIndex =  $('#editInsDes').val();
-    if(!checkNoNegInt(frIndex)) return;
+    if(!checkInsIndex(insIndex)) return false;
+    if(!checkNoNegInt(frIndex)) return false;
     frIndex = parseInt(frIndex);
-    if(!checkFrIndex(frIndex)) return;
-    var src0,src1;
+    if(!checkFrIndex(frIndex)) return false;
     if(isASMDinsType(type)) {
-        src0 = $('#editInsSrc0').val();
-        if(!checkNoNegInt(src0)) return;
+        if(!checkNoNegInt(src0)) return false;
         src0 = parseInt(src0);
-        if(!checkFrIndex(src0)) return;
-        src1 = $('#editInsSrc1').val();
-        if(!checkNoNegInt(src1)) return;
+        if(!checkFrIndex(src0)) return false;
+        if(!checkNoNegInt(src1)) return false;
         src1 = parseInt(src1);
-        if(!checkFrIndex(src1)) return;
+        if(!checkFrIndex(src1)) return false;
         if(src0 == src1) {
             myAlert('加减乘除指令的两个源操作寄存器不能相同');
-            return;
+            return false;
         }
     } else if(isLSinsType(type)) {
-        src0 = $('#editInsSrc0').val();
-        if(!checkNoNegInt(src0)) return;
+        if(!checkNoNegInt(src0)) return false;
         src0 = parseInt(src0);
-        if(!checkMemoryIndex(src0)) return;
+        if(!checkMemoryIndex(src0)) return false;
         src1 = null;
     }
     if(bus.instBuffer[insIndex].issueTime != -1)
         alert('指令已执行，无法修改！');
     else
         bus.editInst(insIndex, type, frIndex, src0, src1);
+    return true;
 }
 
 function deleteInstruction() {

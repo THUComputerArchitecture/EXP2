@@ -261,8 +261,8 @@
             </div>
             <button class="btn btn-primary footer-item" onclick="runOneCycle()">Run One Cycle</button>
             <div class="add-more-cycles-panel">
-                <button class="btn btn-success">Run</button>
-                <input type="text" class="cycles-input" value="5" placeholder="5">
+                <button class="btn btn-success" onclick="nsAhead();updateBus(bus)">Run</button>
+                <input type="text" class="cycles-input" value="5" placeholder="5" id="nsAhead">
                 <div class="add-more-cycles-label"> Cycles</div>
             </div>
 
@@ -321,7 +321,9 @@
                         <input type="text" placeholder="Src2" id="new-instruction-src2-selector"
                                class="form-control">
                     </div>
-                    <button class="btn btn-primary instructions-add-item">Submit</button>
+                    <button class="btn btn-primary instructions-add-item" onclick="addInstruction();updateBus(bus)">
+                        Submit
+                    </button>
             </div>
 
         </div>
