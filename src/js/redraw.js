@@ -63,11 +63,18 @@ function redrwaFU(FUs){
 }
 
 function redrawInst(insts, instCnt){
-    $("#instArea").html(instHead);
+    $('#inst-table').dataTable().fnClearTable();
     for(i = 0; i < instCnt; i++){
         if(insts[i] != null)
-            $("#instArea").append(insts[i].draw(i));
+            $('#inst-table').dataTable().fnAddData(insts[i].draw(i));
     }
+    /*$('#inst-table').html(instTableHead);
+    for(i = 0; i < instCnt; i++){
+        if(insts[i] != null)
+            $('#inst-table').append(insts[i].draw(i));
+        console.log(insts[i].draw(i));
+    }
+    $('#inst-table').append('</tbody>');*/
 }
 
 function redrawAddPipeline(pipeline){
@@ -128,3 +135,17 @@ var memHead = '<tr>' +
     '<th>Address</th>' +
     '<th>Value</th>' +
     '</tr>';
+
+/*var instTableHead = '<thead>' +
+    '<tr>' +
+    '<th>No</th>' +
+    '<th>Type</th>' +
+    '<th>Src0</th>' +
+    '<th>Src1</th>' +
+    '<th>Src2</th>' +
+    '<th class="instructions-result-part">Issue Time</th>' +
+    '<th class="instructions-result-part">Execution Time</th>' +
+    '<th class="instructions-result-part">Finish Time</th>' +
+    '</tr>' +
+    '</thead>' +
+    '<tbody>';*/

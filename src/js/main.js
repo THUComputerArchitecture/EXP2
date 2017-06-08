@@ -140,10 +140,10 @@ $(document).ready(function () {
     selectInit();
     // updateBus(bus);
     // redrawMem(bus.memory, memStart, memNum);
-    // bus.addInst(new Instruction(iName.addd, 1, 2, 3));
-    // bus.addInst(new Instruction(iName.subd, 2, 1, 2));
-    // bus.addInst(new Instruction(iName.st, 2, 0, 0));
-    // updateBus(bus);
+     bus.addInst(new Instruction(iName.addd, 1, 2, 3));
+     bus.addInst(new Instruction(iName.subd, 2, 1, 2));
+     bus.addInst(new Instruction(iName.st, 2, 0, 0));
+     updateBus(bus);
     // redrawMem(bus.memory, memStart, memNum);
     // /*bus.plusOneSecond();
     //  updateBus(bus,instList);
