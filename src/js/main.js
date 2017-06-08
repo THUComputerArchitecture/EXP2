@@ -1,19 +1,50 @@
+$(document).ready(function () {
+    $("#inst-table").dataTable(
+        {
+            responsive: true,
+            "dom": 'T<"clear">lfrtip',
+            "tableTools": {
+                "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+            },
+            "createdRow": function (row, data, index) {
+                $('td', row).eq(0).attr('class', 'inst-No');
+                $('td', row).eq(1).attr('class', 'inst-type');
+                $('td', row).eq(2).attr('class', 'inst-src1');
+                $('td', row).eq(3).attr('class', 'inst-src1');
+                $('td', row).eq(4).attr('class', 'inst-src2');
+                $('td', row).eq(5).attr('class', 'instructions-result-part');
+                $('td', row).eq(6).attr('class', 'instructions-result-part');
+                $('td', row).eq(7).attr('class', 'instructions-result-part');
+                $(row).attr('class', 'inst-row').attr('ondblclick', 'modifyInst(this)').attr('id', 'inst-' + index);
+                console.log(index);
+            },
+        }
+    );
+    $('#mem-table').dataTable({
+        responsive: true,
+        "dom": 'T<"clear">lfrtip',
+        "tableTools": {
+            "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+        }
+    });
+});
+
 function selectInit() {
-    for(var i in iName) {
+    for (var i in iName) {
         var s = '<option value="' + iName[i] + '">' + iName[i] + '</option>';
         $('#new-instruction-type-selector').append(s);
         $('#editInsType').append(s);
     }
-    for(var i = 0; i < FU_SIZE; i++) {
-        $('#editFloatRegister').append('<option value="'+i+'">F'+i+'</option>');
+    for (var i = 0; i < FU_SIZE; i++) {
+        $('#editFloatRegister').append('<option value="' + i + '">F' + i + '</option>');
     }
     // $('.selectpicker').selectpicker();
 }
 
 function generateInstTypeHtml(instType) {
     var html = "<select>";
-    for(var i in iName) {
-        if(iName[i] === instType) {
+    for (var i in iName) {
+        if (iName[i] === instType) {
             html += "<option value='" + iName[i] + "' selected>" + iName[i] + "</option>";
         } else {
             html += "<option value='" + iName[i] + "'>" + iName[i] + "</option>";
@@ -95,4 +126,19 @@ $(document).ready(function () {
     //  updateBus(bus,instList);
     //  redrawMem(bus.memory, memStart, memNum);*/
 });
+
+function clearInstTable() {
+    $("#inst-table").dataTable().fnClearTable();
+    $("#inst-table").dataTable().fnAddData([
+        "0",
+        "ADDD",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+    ]);
+
+}
 
