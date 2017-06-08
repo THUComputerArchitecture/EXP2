@@ -271,5 +271,5 @@
 
 
 .breakpoint-row {
-    background: rgba(255, 174, 5, 0.35);
+    background: rgba(255, 174, 5, 0.35) !important;
 }
