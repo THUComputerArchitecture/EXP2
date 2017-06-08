@@ -47,7 +47,7 @@ $(document).ready(function () {
             "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
         },
         "createdRow": function (row, data, index) {
-            $('td', row).eq(0).attr('class', 'mem-No');
+            $('td', row).eq(0).attr('class', 'mem-address');
             $('td', row).eq(1).attr('class', 'mem-value');
             $(row).attr('class', 'mem-row').attr('ondblclick', 'modifyMem(this)').attr('id', 'mem-' + index);
         },
@@ -74,7 +74,7 @@ $(document).ready(function () {
             "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
         },
         "createdRow": function (row, data, index) {
-            $('td', row).eq(0).attr('class', 'fu-No');
+            $('td', row).eq(0).attr('class', 'fu-address');
             $('td', row).eq(1).attr('class', 'fu-value');
             $('td', row).eq(2).attr('class', 'fu-wait-dev');
             $(row).attr('class', 'fu-row').attr('ondblclick', 'modifyFu(this)').attr('id', 'fu-' + index);
@@ -222,6 +222,11 @@ function confirmModifyMemValue(node) {
     var parent = parents[0];
     var id = parent.id.substring(4);
     var value = $(parent).find(".mem-value").find("input").val();
+    var address = $(parent).find(".mem-address").html();
+    if(!checkNoNegInt(value)) {
+        return;
+    }
+    bus.memory[parseInt(address)] = parseInt(value);
     $(parent).find(".mem-value").html(value);
     $(".mem-row").attr("ondblclick", 'modifyMem(this)');
 }
@@ -232,6 +237,11 @@ function confirmModifyFuValue(node) {
     var parent = parents[0];
     var id = parent.id.substring(3);
     var value = $(parent).find(".fu-value").find("input").val();
+    var address = $(parent).find(".fu-address").html();
+    if(!checkNoNegInt(value)) {
+        return;
+    }
+    bus.Fus[parseInt(address)].value = parseInt(value);
     $(parent).find(".fu-value").html(value);
     $(".fu-row").attr("ondblclick", 'modifyFu(this)');
 }
