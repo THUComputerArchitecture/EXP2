@@ -33,7 +33,8 @@ $(document).ready(function () {
                     "targets":[7],
                     "searchable":false
                 }
-            ]
+            ],
+            "aLengthMenu": [5, 10, 20]
         }
     );
     var data = [];
