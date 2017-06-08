@@ -15,7 +15,7 @@ var FU_SIZE = 11;
 var ADD_STATION_SIZE = 3;
 var MUL_STATION_SIZE = 2;
 var INST_BUF_SIZE = 4096;
-var MAX_RUN_CYCLE = 65535;      //一次执行到断点的操作的最大可执行周期数
+var MAX_RUN_CYCLE = 100;      //一次执行到断点的操作的最大可执行周期数
 
 
 function memDraw(index, value) {
