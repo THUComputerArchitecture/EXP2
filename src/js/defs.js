@@ -198,7 +198,8 @@ function FU(){
         this.value = 0.0;
     };
     this.draw = function(id){
-        return [id.toString(), this.value.toString(), this.waitDev];
+        var stt = this.waitDev? this.waitDev: "null";
+        return [id.toString(), this.value.toString(), stt];
         /*var html =
             '<tr id="'+ devName.FU + "_" + id + '">'  +
             '<td>'+ id +

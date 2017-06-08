@@ -63,9 +63,9 @@ function redrawStoreBuf(storeBuffers){
 }
 
 function redrwaFU(FUs){
-    $("#FUArea").dataTable().fnClearTable();
+    $("#fu-table").dataTable().fnClearTable();
     for(var i = 0; i < FU_SIZE; i++)
-        $("#FUArea").dataTable().fnAddData(FUs[i].draw(i));
+        $("#fu-table").dataTable().fnAddData(FUs[i].draw(i));
 }
 
 function redrawInst(insts, instCnt){
