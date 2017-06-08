@@ -212,6 +212,14 @@
                             </div>
                             <div class="ibox-content">
                                 <table class="table table-striped table-bordered table-hover dataTables-example" id="mem-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Address</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -243,7 +251,7 @@
             <div class="clock-panel footer-item">
                 <strong>Current Clock Cycle: <span class="clock-board" id="timer">0</span></strong>
             </div>
-            <button class="btn btn-primary footer-item" onclick="clearInstTable()">Run One Cycle</button>
+            <button class="btn btn-primary footer-item" onclick="runOneCycle()">Run One Cycle</button>
             <div class="add-more-cycles-panel">
                 <button class="btn btn-success">Run</button>
                 <input type="text" class="cycles-input" value="5" placeholder="5">

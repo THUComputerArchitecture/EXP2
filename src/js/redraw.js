@@ -12,16 +12,22 @@ function updateBus(bus, insts, memStart, memNum){
     redrawTimer(bus.curTime);
     redrawAddPipeline(bus.addPipeline);
     redrawMulDivPipeLine(bus.mulDivPipeline);
-    //redrawMem(bus.memory, 10, 6);
+    redrawMem(bus.memory, 0,4096);
 }
 
 
 
 function redrawMem(memory, start, num){
     $('#mem-table').dataTable().fnClearTable();
-    for(var i = start; i < start + num; i++){
+   /* for(var i = start; i < start + num; i++){
         $('#mem-table').dataTable().fnAddData(memDraw(i, memory[i]));
+    }*/
+    var data = [];
+
+    for(var i = 0; i < MEM_SIZE; i++) {
+        data.push([i, memory[i]]);
     }
+    $('#mem-table').dataTable().fnAddData(data);
 }
 
 function redrawTimer(time){

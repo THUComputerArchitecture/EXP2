@@ -210,7 +210,7 @@ function confirmModifyMemValue(node) {
     var value = $(parent).find(".mem-value").find("input").val();
     $(parent).find(".mem-value").html(value);
     $(".mem-row").attr("ondblclick", 'modifyMem(this)');
-    table.draw();
+    //table.draw();
 }
 
 function confirmModifyFuValue(node) {
@@ -222,7 +222,7 @@ function confirmModifyFuValue(node) {
     var value = $(parent).find(".fu-value").find("input").val();
     $(parent).find(".fu-value").html(value);
     $(".fu-row").attr("ondblclick", 'modifyFu(this)');
-    table.draw();
+    //table.draw();
 }
 
 $(document).ready(function () {
@@ -238,6 +238,11 @@ $(document).ready(function () {
     //  updateBus(bus,instList);
     //  redrawMem(bus.memory, memStart, memNum);*/
 });
+
+function runOneCycle() {
+    bus.plusOneSecond();
+    updateBus(bus);
+}
 
 function clearInstTable() {
     $("#inst-table").dataTable().fnClearTable();
