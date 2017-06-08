@@ -64,15 +64,17 @@ function editInstruction(insIndex, type, frIndex, src0, src1) {
     return true;
 }
 
-function deleteInstruction() {
-    var insIndex = $('#delInsNumber').val();
-    if(!checkNoNegInt(insIndex)) return;
+function deleteInstruction(insIndex) {
+    if(!checkNoNegInt(insIndex)) return false;
     insIndex = parseInt(insIndex);
-    if(!checkInsIndex(insIndex)) return;
-    if(bus.instBuffer[insIndex].issueTime != -1)
+    if(!checkInsIndex(insIndex)) return false;
+    if(bus.instBuffer[insIndex].issueTime != -1) {
         myAlert('指令已执行，无法删除！');
+        return false;
+    }
     else
         bus.delInst(insIndex);
+    return true;
 }
 
 function editFloatRegisterValue() {
@@ -155,15 +157,15 @@ function nsAhead() {
         bus.plusOneSecond();
 }
 
-function setBreakPoint() {
-    var insIndex = $('#bpInsIndex').val();
-    if(!checkNoNegInt(insIndex)) return;
+function changeBreakPoint(insIndex) {
+    if(!checkNoNegInt(insIndex)) return false;
     insIndex = parseInt(insIndex);
-    if(!checkInsIndex(insIndex)) return;
-    bus.instBuffer[insIndex].breakpoint = true;
+    if(!checkInsIndex(insIndex)) return false;
+    bus.instBuffer[insIndex].breakpoint = ~bus.instBuffer[insIndex].breakpoint;
+    return true;
 }
 
-function runUntilBP(bus) {
+function runUntilBP() {
     while(bus.plusOneSecond()){};
 }
 
