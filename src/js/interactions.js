@@ -110,7 +110,7 @@ function save2file(bus) {
         content += bus.instBuffer[i].src1 + '\r\n';
         content += bus.instBuffer[i].src2 + '\r\n';
         content += bus.instBuffer[i].issueTime + '\r\n';
-        content += bus.instBuffer[i].excuteTime + '\r\n';
+        content += bus.instBuffer[i].executeTime + '\r\n';
         content += bus.instBuffer[i].resultTime + '\r\n';
     }
     for(var i = 0; i < FU_SIZE; i++) {
@@ -124,7 +124,7 @@ function save2file(bus) {
 }
 
 function loadFromFile(updateBus) {
-    var file = document.getElementById('loadFile').files[0];
+    var file = document.getElementById('select-file-btn').files[0];
     if(typeof(file) == 'undefined') {
         myAlert('请先选择导入文件');
         return;
@@ -139,7 +139,7 @@ function loadFromFile(updateBus) {
         for(var i = 0; i < parseInt(data[0]); i++) {
             bus.addInst(new Instruction(data[++off], data[++off], data[++off], data[++off]));
             bus.instBuffer[i].issueTime = parseInt(data[++off]);
-            bus.instBuffer[i].excuteTime = parseInt(data[++off]);
+            bus.instBuffer[i].executeTime = parseInt(data[++off]);
             bus.instBuffer[i].resultTime = parseInt(data[++off]);
         }
         for(var i = 0; i < FU_SIZE; i++) {

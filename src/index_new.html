@@ -37,12 +37,12 @@
         <div class="border-bottom white-bg page-title-panel">
             <div class="page-title">Tomasulo Smulator</div>
             <div class="file-btn-panel">
-                <button class="btn btn-primary">Save</button>
+                <button class="btn btn-primary" onclick="save2file(bus)">Save</button>
                 <label class="btn btn-success" style="margin-left: 10px">
                     <input id="select-file-btn" onchange="selectedFile(this)" type="file" style="display: none" />
                     Select File
                 </label>
-                <button class="btn btn-default" id="load-btn" style="margin-left: 10px">Load</button>
+                <button class="btn btn-default" id="load-btn" style="margin-left: 10px" onclick="loadFromFile(updateBus)">Load</button>
             </div>
         </div>
         <div class="wrapper wrapper-content animated fadeInRight">
