@@ -17,11 +17,12 @@ var MUL_STATION_SIZE = 2;
 var INST_BUF_SIZE = 4096;
 
 function memDraw(index, value) {
-    html = '<tr id="' + devName.mem + "_" + index + '">' +
-        '<td>' + index +
-        '<td>' + value +
-        '</tr>';
-    return html;
+    return [index, value];
+    // html = '<tr id="' + devName.mem + "_" + index + '">' +
+    //     '<td>' + index +
+    //     '<td>' + value +
+    //     '</tr>';
+    // return html;
 }
 
 var iName = {           //指令名称
@@ -113,14 +114,13 @@ function LoadBuffer(){
 
     this.draw = function(id){
         var html =
-            '<tr id="'+ devName.ld + "_" + id + '">'  +
-            '<td>LoadBuffer'+ id +
-            '<td>' + this.busy +
-            '<td>' + this.address +
-            '<td>' + this.value +
-            '<td>' + this.remainingTime +
+            '<tr id="'+ devName.ld + "_" + id + '" class="">'  +
+            '<td>'+ id + '</td>' +
+            '<td>' + this.busy + '</td>' +
+            '<td>' + this.address + '</td>' +
+            '<td>' + this.value + '</td>' +
+            '<td>' + this.remainingTime + '</td>' +
             '</tr>' ;
-
         return html;
     }
     this.init = function(){
@@ -137,7 +137,7 @@ function StoreBuffer(){
     this.draw = function(id){
         var html =
             '<tr id="'+ devName.st + "_" + id + '">'  +
-            '<td>StoreBuffer'+ id +
+            '<td>'+ id +
             '<td>' + this.busy +
             '<td>' + this.address +
             '<td>' + this.value +
@@ -176,13 +176,13 @@ function ReservationStation(){
     this.draw = function(id,type){
         var html =
             '<tr id="'+ type + "_" + id + '">'  +
-            '<td>' + type + id  +
-            '<td>' + this.op +
-            '<td>' + this.v1 +
-            '<td>' + this.q1 +
-            '<td>' + this.v2 +
-            '<td>' + this.q2 +
-            '<td>' + this.busy +
+            '<td>' + id  + '</td>' +
+            '<td><div class="label">'+ this.op + '</div></td>' +
+            '<td>' + this.v1 + '</td>' +
+            '<td>' + this.q1 + '</td>' +
+            '<td>' + this.v2 + '</td>' +
+            '<td>' + this.q2 + '</td>' +
+            '<td>' + this.busy + '</td>' +
             '</tr>' ;
 
         return html;
@@ -198,9 +198,9 @@ function FU(){
     this.draw = function(id){
         var html =
             '<tr id="'+ devName.FU + "_" + id + '">'  +
-            '<td>FU'+ id +
-            '<td>' + this.waitDev +
+            '<td>'+ id +
             '<td>' + this.value +
+            '<td>' + this.waitDev +
             '</tr>' ;
 
         return html;
@@ -261,20 +261,19 @@ function Pipeline(bus, stageNum, name){
             }
         }
     };
-    this.draw = function(){
-        var html = '<tr><th>Pipeline Name</th>';
-        for(var i = 0; i <= this.stageNum; i++){
-            html += '<th>stage' + i + '</th>';
-        }
-        html += '</tr>';
-        html += '<tr><td>'+ this.name + '</td>';
-        for(var i = 0; i <= this.stageNum; i++){
-            if(this.stagesInsts[i] == null)
-                html += '<td>' +  'null' + '</td>';
+    this.draw = function(type){
+        var html = '<h5>Add-Sub-Pipeline</h5> \
+        <div class="pipeline-board">';
+        for(var i = 0; i <= this.stageNum; i++) {
+            html += '<div class="pipeline-item '+type+'-pipeline-stage-'+(i+1)+'">\
+                <div class="pipeline-stage-label">Stage ' + i + '</div>\
+                <div class="label pipeline-inst-board">';
+            if (this.stagesInsts[i] == null)
+                html += 'null</div></div>';
             else
-                html += '<td>' +  this.stagesInsts[i].name + '</td>';
+                html += this.stagesInsts[i].name + '</div></div>';
         }
-        html += '</tr>';
+        html += '</div>';
         return html;
     };
     this.init();
