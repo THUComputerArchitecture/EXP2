@@ -248,6 +248,11 @@ $(document).ready(function () {
     //  redrawMem(bus.memory, memStart, memNum);*/
 });
 
+function runOneCycle() {
+    bus.plusOneSecond();
+    updateBus(bus);
+}
+
 function clearInstTable() {
     $("#inst-table").dataTable().fnClearTable();
     $("#inst-table").dataTable().fnAddData([
