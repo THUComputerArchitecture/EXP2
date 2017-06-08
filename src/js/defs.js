@@ -75,8 +75,9 @@ function Instruction(name,src0, src1, src2){
     this.WBDev = null;      //经过重命名后，写回的目标名
 
     this.draw = function(id){
-        var html =
-                '<tr id="'+ devName.inst + "_" + id + '">'  +
+        return [id.toString(), this.name, this.src0, this.src1, this.src1,
+                    this.issueTime, this.executeTime, this.resultTime];
+ /*               '<tr id="'+ devName.inst + "_" + id + '">'  +
                 '<td>instruction'+ id +
                 '<td>' + this.name +
                 '<td>' + this.src0 +
@@ -85,9 +86,19 @@ function Instruction(name,src0, src1, src2){
                 '<td>' + this.issueTime +
                 '<td>' + this.executeTime +
                 '<td>' + this.resultTime +
-                '</tr>' ;
+                '</tr>' ;*/
+       /* var html = '<tr class="inst-row" ondblclick="modifyInst(this)" id="inst-'+id+'">' +
+            '<td class="inst-No">'+id+'</td>' +
+            '<td class="inst-type">'+this.name+'</td>' +
+            '<td class="inst-src0">'+this.src0+'</td>'+
+            '<td class="inst-src1">'+this.src1+'</td>'+
+            '<td class="inst-src2">'+this.src2+'</td>'+
+            '<td class="instructions-result-part">'+this.issueTime+'</td>'+
+            '<td class="instructions-result-part">'+this.executeTime+'</td>'+
+            '<td class="instructions-result-part">'+this.resultTime+'</td>'+
+            '</tr>';
 
-        return html;
+        return html;*/
     }
 }
 

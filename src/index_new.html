@@ -478,7 +478,7 @@
             <div class="clock-panel footer-item">
                 <strong>Current Clock Cycle: <span class="clock-board">0</span></strong>
             </div>
-            <button class="btn btn-primary footer-item">Add One Cycle</button>
+            <button class="btn btn-primary footer-item" onclick="bus.plusOneSecond()">Add One Cycle</button>
             <div class="add-more-cycles-panel">
                 <button class="btn btn-success">Add</button>
                 <input type="text" class="cycles-input" value="5" placeholder="5">
@@ -493,7 +493,7 @@
     <div id="instructions-panel" class="instructions-panel collapse">
         <div class="ibox-content">
 
-            <table class="table table-striped table-bordered table-hover dataTables-example">
+            <table class="table table-striped table-bordered table-hover dataTables-example" id="inst-table">
                 <thead>
                 <tr>
                     <th>No</th>
@@ -507,7 +507,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="inst-row" ondblclick="modifyInst(this)" id="inst-0">
+                <!--<tr class="inst-row" ondblclick="modifyInst(this)" id="inst-0">
                     <td class="inst-No">0</td>
                     <td class="inst-type">ADDD</td>
                     <td class="inst-src0">1</td>
@@ -536,8 +536,7 @@
                     <td class="instructions-result-part">-1</td>
                     <td class="instructions-result-part">-1</td>
                     <td class="instructions-result-part">-1</td>
-                </tr>
-
+                </tr>-->
                 </tbody>
             </table>
 
@@ -607,14 +606,15 @@
 
 <!-- Page-Level Scripts -->
 <script>
-    $(document).ready(function () {
-        $('.dataTables-example').dataTable({
-            responsive: true,
-            "dom": 'T<"clear">lfrtip',
-            "tableTools": {
-                "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
-            }
-        });
+    var bus = new BUS();
+//    $(document).ready(function () {
+//        $('.dataTables-example').dataTable({
+//            responsive: true,
+//            "dom": 'T<"clear">lfrtip',
+//            "tableTools": {
+//                "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+//            }
+//        });
 
         /* Init DataTables */
         var oTable = $('#editable').dataTable();
