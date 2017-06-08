@@ -236,6 +236,7 @@
 .inst-modify-btn {
     padding: 2px 5px;
     font-size: 7px;
+    margin-right: 5px;
 }
 
 .breakpoint-panel {
