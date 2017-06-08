@@ -218,3 +218,23 @@
 .Store-buffer-panel {
     margin-top: 20px;
 }
+
+.no-padding {
+    padding: 0;
+}
+
+.inst-modify-input {
+    width: 50px;
+    border-radius: 3px;
+    border: solid 1px #8B91A0;
+}
+
+.inst-modify-btns-panel {
+    align-items: center;
+    align-content: center;
+}
+
+.inst-modify-btn {
+    padding: 2px 5px;
+    font-size: 7px;
+}
