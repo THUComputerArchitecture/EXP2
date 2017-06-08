@@ -198,14 +198,15 @@ function FU(){
         this.value = 0.0;
     };
     this.draw = function(id){
-        var html =
+        return [id.toString(), this.value.toString(), this.waitDev];
+        /*var html =
             '<tr id="'+ devName.FU + "_" + id + '">'  +
             '<td>'+ id +
             '<td>' + this.value +
             '<td>' + this.waitDev +
             '</tr>' ;
 
-        return html;
+        return html;*/
     };
     this.init();
 }

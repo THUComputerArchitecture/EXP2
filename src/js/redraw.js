@@ -31,47 +31,46 @@ function redrawMem(memory, start, num){
 }
 
 function redrawTimer(time){
-    $("#timer").html(time );
+    $("#timer").html(time);
 }
 
 function redrawLoadBuf(loadBuffers){
     $("#loadBufArea").html(loadBufHead);
-    for(i = 0; i < loadBuffers.length; i++) {
+    for(var i = 0; i < loadBuffers.length; i++) {
         $("#loadBufArea").append(loadBuffers[i].draw(i));
     }
 }
 
 function redrawAddStation(addStations){
     $("#addStationArea").html(stationHead);
-    for(i = 0; i < addStations.length; i++){
+    for(var i = 0; i < addStations.length; i++){
         $("#addStationArea").append(addStations[i].draw(i,devName.add));
     }
 }
 
 function redrawMulStation(mulStations){
     $("#mulStationArea").html(stationHead);
-    for(i = 0; i < mulStations.length; i++){
+    for(var i = 0; i < mulStations.length; i++){
         $("#mulStationArea").append(mulStations[i].draw(i,devName.mul));
     }
 }
 
 function redrawStoreBuf(storeBuffers){
     $("#storeBufArea").html(storeBufHead);
-    for(i = 0; i < storeBuffers.length; i++){
+    for(var i = 0; i < storeBuffers.length; i++){
         $("#storeBufArea").append(storeBuffers[i].draw(i));
     }
 }
 
 function redrwaFU(FUs){
-    $("#FUArea").html(FUHead);
-    for(i = 0; i < FUs.length; i++){
-        $("#FUArea").append(FUs[i].draw(i));
-    }
+    $("#FUArea").dataTable().fnClearTable();
+    for(var i = 0; i < FU_SIZE; i++)
+        $("#FUArea").dataTable().fnAddData(FUs[i].draw(i));
 }
 
 function redrawInst(insts, instCnt){
     $('#inst-table').dataTable().fnClearTable();
-    for(i = 0; i < instCnt; i++){
+    for(var i = 0; i < instCnt; i++){
         if(insts[i] != null)
             $('#inst-table').dataTable().fnAddData(insts[i].draw(i));
     }
@@ -111,10 +110,4 @@ var storeBufHead =  '<tr>' +
     '<th>Wait Dev</th>' +
     '<th>Active</th>' +
     '<th>Remaining Time</th>' +
-    '</tr>';
-
-var FUHead =  '<tr>' +
-    '<th>No</th>' +
-    '<th>Value</th>' +
-    '<th>Wait Dev</th>' +
     '</tr>';
