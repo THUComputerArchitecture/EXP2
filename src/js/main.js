@@ -267,7 +267,7 @@ function confirmModifyFuValue(node) {
     if(!checkNoNegInt(value)) {
         return;
     }
-    bus.Fus[parseInt(address)].value = parseInt(value);
+    bus.FUs[parseInt(address)].value = parseInt(value);
     $(parent).find(".fu-value").html(value);
     $(".fu-row").attr("ondblclick", 'modifyFu(this)');
 }
