@@ -19,37 +19,80 @@ $(document).ready(function () {
             },
             "columnDefs":[
                 {
-                    //设置第一列不参与搜索
                     "targets":[5],
                     "searchable":false
                 },
                 {
-                    //设置第一列不参与搜索
                     "targets":[6],
                     "searchable":false
                 },
                 {
-                    //设置第一列不参与搜索
                     "targets":[7],
                     "searchable":false
                 }
-            ]
+            ],
+            "aLengthMenu": [5, 10, 20]
         }
     );
+    var data = [];
+
+    for(var i = 0; i < MEM_SIZE; i++) {
+        data.push([i, '0']);
+    }
+
     $('#mem-table').dataTable({
         responsive: true,
         "dom": 'T<"clear">lfrtip',
         "tableTools": {
             "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
         },
+        "createdRow": function (row, data, index) {
+            $('td', row).eq(0).attr('class', 'mem-No');
+            $('td', row).eq(1).attr('class', 'mem-value');
+            $(row).attr('class', 'mem-row').attr('ondblclick', 'modifyMem(this)').attr('id', 'mem-' + index);
+        },
         "columnDefs":[
             {
                 //设置第一列不参与搜索
                 "targets":[1],
                 "searchable":false
-            },
-        ]
+            }
+        ],
+        data: data
     });
+
+    data = [];
+
+    for(var i = 0; i < FU_SIZE; i++) {
+        data.push([i, '0', 'null']);
+    }
+
+    $('#fu-table').dataTable({
+        responsive: true,
+        "dom": 'T<"clear">lfrtip',
+        "tableTools": {
+            "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+        },
+        "createdRow": function (row, data, index) {
+            $('td', row).eq(0).attr('class', 'fu-No');
+            $('td', row).eq(1).attr('class', 'fu-value');
+            $('td', row).eq(2).attr('class', 'fu-wait-dev');
+            $(row).attr('class', 'fu-row').attr('ondblclick', 'modifyFu(this)').attr('id', 'fu-' + index);
+        },
+        "columnDefs":[
+            {
+                "targets":[1],
+                "searchable":false
+            },
+            {
+                "targets":[2],
+                "searchable":false
+            }
+        ],
+        "aLengthMenu": [11, 5],
+        data: data
+    });
+
 });
 
 function selectInit() {
@@ -78,7 +121,7 @@ function generateInstTypeHtml(instType) {
 }
 
 function generateInstSrcHtml(src0) {
-    return "<input type='text' class='inst-modify-input' value='" + src0 + "'>"
+    return "<input type='text' class='inst-modify-input' value='" + src0 + "'>";
 }
 
 function generateInstModifyBtn() {
@@ -89,6 +132,14 @@ function generateInstModifyBtn() {
 
 function generateInstResultPart() {
     return '<td class="instructions-result-part">-1</td><td class="instructions-result-part">-1</td><td class="instructions-result-part">-1</td>'
+}
+
+function generateMemValueHtml(value) {
+    return "<input type='text' class='mem-modify-input' value='" + value + "' onblur='confirmModifyMemValue(this)'>";
+}
+
+function generateFuValueHtml(value) {
+    return "<input type='text' class='fu-modify-input' value='" + value + "' onblur='confirmModifyFuValue(this)'>";
 }
 
 
@@ -107,8 +158,23 @@ function modifyInst(node) {
     $(node).append(generateInstModifyBtn());
 }
 
+
+function modifyMem(node) {
+    var id = node.id.substring(4);
+    var value = $(node).find(".mem-value").html();
+    $(node).find(".mem-value").html(generateMemValueHtml(value));
+    $(".mem-row").removeAttr("ondblclick");
+}
+
+function modifyFu(node) {
+    var id = node.id.substring(3);
+    var value = $(node).find(".fu-value").html();
+    $(node).find(".fu-value").html(generateFuValueHtml(value));
+    $(".fu-row").removeAttr("ondblclick");
+}
+
 function confirmModifyInst(node) {
-    var table = $('#inst-table').DataTable();
+    var table = $('#inst-table').dataTable();
     var parents = $(node).parents(".inst-row");
     console.log("confirm");
     var parent = parents[0];
@@ -135,6 +201,29 @@ function confirmDeleteInst(node) {
     $(".inst-row").attr("ondblclick", 'modifyInst(this)');
 }
 
+function confirmModifyMemValue(node) {
+    var table = $('#mem-table').dataTable();
+    var parents = $(node).parents(".mem-row");
+    console.log("confirm");
+    var parent = parents[0];
+    var id = parent.id.substring(4);
+    var value = $(parent).find(".mem-value").find("input").val();
+    $(parent).find(".mem-value").html(value);
+    $(".mem-row").attr("ondblclick", 'modifyMem(this)');
+    table.draw();
+}
+
+function confirmModifyFuValue(node) {
+    var table = $('#fu-table').dataTable();
+    var parents = $(node).parents(".fu-row");
+    console.log("confirm");
+    var parent = parents[0];
+    var id = parent.id.substring(3);
+    var value = $(parent).find(".fu-value").find("input").val();
+    $(parent).find(".fu-value").html(value);
+    $(".fu-row").attr("ondblclick", 'modifyFu(this)');
+    table.draw();
+}
 
 $(document).ready(function () {
     selectInit();
