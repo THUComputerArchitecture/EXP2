@@ -85,7 +85,7 @@ function Instruction(name,src0, src1, src2){
     this.WBDev = null;      //经过重命名后，写回的目标名
 
     this.draw = function(id){
-        return [id.toString(), this.name, this.src0, this.src1, this.src1,
+        return [id.toString(), this.name, this.src0, this.src1, this.src2,
                     this.issueTime, this.executeTime, this.resultTime];
  /*               '<tr id="'+ devName.inst + "_" + id + '">'  +
                 '<td>instruction'+ id +

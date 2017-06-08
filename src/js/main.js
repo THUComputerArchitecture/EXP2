@@ -9,7 +9,7 @@ $(document).ready(function () {
             "createdRow": function (row, data, index) {
                 $('td', row).eq(0).attr('class', 'inst-No');
                 $('td', row).eq(1).attr('class', 'inst-type');
-                $('td', row).eq(2).attr('class', 'inst-src1');
+                $('td', row).eq(2).attr('class', 'inst-src0');
                 $('td', row).eq(3).attr('class', 'inst-src1');
                 $('td', row).eq(4).attr('class', 'inst-src2');
                 $('td', row).eq(5).attr('class', 'instructions-result-part');
@@ -196,13 +196,15 @@ function confirmModifyInst(node) {
     var src0 = $(parent).find(".inst-src0").find("input").val();
     var src1 = $(parent).find(".inst-src1").find("input").val();
     var src2 = $(parent).find(".inst-src2").find("input").val();
-    $(parent).find(".inst-type").html(instType);
-    $(parent).find(".inst-src0").html(src0);
-    $(parent).find(".inst-src1").html(src1);
-    $(parent).find(".inst-src2").html(src2);
-    $(parent).find(".inst-modify-btns-panel").remove();
-    $(parent).append(generateInstResultPart());
-    $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+    if(editInstruction(id, instType, src0, src1, src2)) {
+        $(parent).find(".inst-type").html(instType);
+        $(parent).find(".inst-src0").html(src0);
+        $(parent).find(".inst-src1").html(src1);
+        $(parent).find(".inst-src2").html(src2);
+        $(parent).find(".inst-modify-btns-panel").remove();
+        $(parent).append(generateInstResultPart());
+        $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+    }
 }
 
 function confirmDeleteInst(node) {
