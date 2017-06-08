@@ -139,7 +139,9 @@ function generateInstSrcHtml(src0) {
 }
 
 function generateInstModifyBtn() {
-    var html = "<td class='inst-modify-btns-panel center-orientation' colspan='3'> <button class='btn inst-modify-btn btn-success' onclick='confirmModifyInst(this)'>Confirm</button><button class='btn inst-modify-btn btn-primary' onclick='confirmChangeBreakpoint(this)'>Set/Delete Breakpoint</button><button class='btn inst-modify-btn btn-warning' onclick='confirmDeleteInst(this)'>Delete</button></td>"
+    var html = "<td class='inst-modify-btns-panel center-orientation' colspan='3'> <button class='btn inst-modify-btn btn-success' onclick='confirmModifyInst(this)'>Confirm</button>" +
+        "<button class='btn inst-modify-btn btn-primary' onclick='confirmChangeBreakpoint(this)'>Set/Delete Breakpoint</button>" +
+        "<button class='btn inst-modify-btn btn-warning' onclick='confirmDeleteInst(this)'>Delete</button></td>"
     return html;
 
 }
@@ -211,9 +213,12 @@ function confirmDeleteInst(node) {
     var table = $('#inst-table').DataTable();
     var parents = $(node).parents(".inst-row");
     var parent = parents[0];
-    table.row(parent).remove().draw();
-    $(".inst-row").attr("ondblclick", 'modifyInst(this)');
-
+    var id = parent.id.substring(5);
+    if(deleteInstruction(id)) {
+        table.row(parent).remove().draw();
+        $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+        updateBus(bus);
+    }
 }
 
 function confirmModifyMemValue(node) {
@@ -282,5 +287,11 @@ function clearInstTable() {
 
 
 function confirmChangeBreakpoint(node) {
-
+    var parents = $(node).parents(".inst-row");
+    var parent = parents[0];
+    var id = parent.id.substring(5);
+    if(changeBreakPoint(id)) {
+         confirmModifyInst(node);
+        $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+    }
 }
