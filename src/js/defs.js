@@ -9,6 +9,8 @@ var MUL_PIPELINE_STAGE_CCs = [1,2,2,2,2,2,1,1];
 var DIV_PIPELINE_STAGE_NUM = 6;
 var DIV_PIPELINE_STAGE_CCs = [6,7,7,7,7,7,6,1];
 
+var MAX_RUN_CYCLE = 65535;      //一次执行到断点的操作的最大可执行周期数
+
 function memDraw(index, value) {
     html = '<tr id="' + devName.mem + "_" + index + '">' +
         '<td>' + index +
@@ -149,10 +151,10 @@ function ReservationStation(){
         this.v2 = 0;
         this.q1 = null;               // 操作数等待状态，如果不为空，表示其等待在某一个部件中
         this.q2 = null;
-        this.result = 0;
+        //this.result = 0;              //指令的运算结果，引入流水线后不再使用
         this.busy = false;          // 是否已被占用
-        this.active = false;        // 是否正在运算
-        this.remainingTime = -1;    // 指令还剩多少时间运行完毕
+        //this.active = false;        // 是否正在运算，引入流水线后不再使用
+        //this.remainingTime = -1;    // 指令还剩多少时间运行完毕，引入流水线后不再使用
         this.instruction = null;
     }
     this.draw = function(id,type){
@@ -311,7 +313,7 @@ function BUS(){
     };
     this.init();
     /*推进一个时钟周期
-        执行顺序：issue -> checkexecute -> checkStart
+        执行顺序：issue -> checkExecute -> checkStart
      */
     this.plusOneSecond = function(){
         var flag = true;
@@ -325,12 +327,12 @@ function BUS(){
             }
         }
         //console.log('flag is ?'+flag);
-        this.checkexecute();
+        this.checkExecute();
         if(!this.checkStart())
             flag = false;
         //console.log('flag1 is ?'+flag);
         this.curTime ++;
-        if(this.curTime >= 100)
+        if(this.curTime >= MAX_RUN_CYCLE)
             flag = false;
         return flag;
     };
@@ -469,7 +471,7 @@ function BUS(){
     };
 
     // 使得所有开始运算的部件推进一个周期
-    this.checkexecute = function(){
+    this.checkExecute = function(){
         this.executeAdd();
         this.executeLoad();
         this.executeMul();
