@@ -48,6 +48,11 @@ $(document).ready(function () {
         "tableTools": {
             "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
         },
+        "createdRow": function (row, data, index) {
+            $('td', row).eq(0).attr('class', 'mem-No');
+            $('td', row).eq(1).attr('class', 'mem-value');
+            $(row).attr('class', 'mem-row').attr('ondblclick', 'modifyMem(this)').attr('id', 'mem-' + index);
+        },
         "columnDefs":[
             {
                 //设置第一列不参与搜索
@@ -86,7 +91,7 @@ function generateInstTypeHtml(instType) {
 }
 
 function generateInstSrcHtml(src0) {
-    return "<input type='text' class='inst-modify-input' value='" + src0 + "'>"
+    return "<input type='text' class='inst-modify-input' value='" + src0 + "'>";
 }
 
 function generateInstModifyBtn() {
@@ -99,6 +104,9 @@ function generateInstResultPart() {
     return '<td class="instructions-result-part">-1</td><td class="instructions-result-part">-1</td><td class="instructions-result-part">-1</td>'
 }
 
+function generateMemValueHtml(value) {
+    return "<input type='text' class='mem-modify-input' value='" + value + "' onblur='confirmModifyMemValue(this)'>";
+}
 
 function modifyInst(node) {
     var id = node.id.substring(5);
@@ -115,8 +123,15 @@ function modifyInst(node) {
     $(node).append(generateInstModifyBtn());
 }
 
+
+function modifyMem(node) {
+    var id = node.id.substring(4);
+    var value = $(node).find(".mem-value").html();
+    $(node).find(".mem-value").html(generateMemValueHtml(value));
+    $(".mem-row").removeAttr("ondblclick");
+}
 function confirmModifyInst(node) {
-    var table = $('#inst-table').DataTable();
+    var table = $('#inst-table').dataTable();
     var parents = $(node).parents(".inst-row");
     console.log("confirm");
     var parent = parents[0];
@@ -143,6 +158,17 @@ function confirmDeleteInst(node) {
     $(".inst-row").attr("ondblclick", 'modifyInst(this)');
 }
 
+function confirmModifyMemValue(node) {
+    var table = $('#mem-table').dataTable();
+    var parents = $(node).parents(".mem-row");
+    console.log("confirm");
+    var parent = parents[0];
+    var id = parent.id.substring(4);
+    var value = $(parent).find(".mem-value").find("input").val();
+    $(parent).find(".mem-value").html(value);
+    $(".mem-row").attr("ondblclick", 'modifyMem(this)');
+    table.draw();
+}
 
 $(document).ready(function () {
     selectInit();

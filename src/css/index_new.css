@@ -262,3 +262,9 @@
     color: red;
     margin-left: 3px;
 }
+
+.mem-modify-input {
+    width: 50px;
+    border-radius: 3px;
+    border: solid 1px #8B91A0;
+}
