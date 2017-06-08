@@ -41,7 +41,14 @@ $(document).ready(function () {
         "dom": 'T<"clear">lfrtip',
         "tableTools": {
             "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
-        }
+        },
+        "columnDefs":[
+            {
+                //设置第一列不参与搜索
+                "targets":[1],
+                "searchable":false
+            },
+        ]
     });
 });
 
