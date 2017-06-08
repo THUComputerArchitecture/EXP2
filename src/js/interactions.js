@@ -57,9 +57,10 @@ function editInstruction(insIndex, type, frIndex, src0, src1) {
         if(!checkMemoryIndex(src0)) return false;
         src1 = null;
     }
-    if(bus.instBuffer[insIndex].issueTime != -1)
+    if(bus.instBuffer[insIndex].issueTime != -1) {
         alert('指令已执行，无法修改！');
-    else
+        return false;
+    } else
         bus.editInst(insIndex, type, frIndex, src0, src1);
     return true;
 }
@@ -158,9 +159,6 @@ function nsAhead() {
 }
 
 function changeBreakPoint(insIndex) {
-    if(!checkNoNegInt(insIndex)) return false;
-    insIndex = parseInt(insIndex);
-    if(!checkInsIndex(insIndex)) return false;
     bus.instBuffer[insIndex].breakpoint = ~bus.instBuffer[insIndex].breakpoint;
     return true;
 }

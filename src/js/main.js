@@ -1,3 +1,7 @@
+var instType_backup = "";
+var src0_backup = "";
+var src1_backup = "";
+var src2_backup = "";
 $(document).ready(function () {
     $("#inst-table").dataTable(
         {
@@ -16,6 +20,9 @@ $(document).ready(function () {
                 $('td', row).eq(6).attr('class', 'instructions-result-part');
                 $('td', row).eq(7).attr('class', 'instructions-result-part');
                 $(row).attr('class', 'inst-row').attr('ondblclick', 'modifyInst(this)').attr('id', 'inst-' + index);
+                if(bus.instBuffer[index].breakpoint){
+                    $(row).addClass('breakpoint-row');
+                }
             },
             "columnDefs":[
                 {
@@ -47,7 +54,7 @@ $(document).ready(function () {
             "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
         },
         "createdRow": function (row, data, index) {
-            $('td', row).eq(0).attr('class', 'mem-No');
+            $('td', row).eq(0).attr('class', 'mem-address');
             $('td', row).eq(1).attr('class', 'mem-value');
             $(row).attr('class', 'mem-row').attr('ondblclick', 'modifyMem(this)').attr('id', 'mem-' + index);
         },
@@ -74,7 +81,7 @@ $(document).ready(function () {
             "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
         },
         "createdRow": function (row, data, index) {
-            $('td', row).eq(0).attr('class', 'fu-No');
+            $('td', row).eq(0).attr('class', 'fu-address');
             $('td', row).eq(1).attr('class', 'fu-value');
             $('td', row).eq(2).attr('class', 'fu-wait-dev');
             $(row).attr('class', 'fu-row').attr('ondblclick', 'modifyFu(this)').attr('id', 'fu-' + index);
@@ -165,6 +172,10 @@ function modifyInst(node) {
     var src0 = $(node).find(".inst-src0").html();
     var src1 = $(node).find(".inst-src1").html();
     var src2 = $(node).find(".inst-src2").html();
+    instType_backup = instType;
+    src1_backup = src1;
+    src0_backup = src0;
+    src2_backup = src2;
     $(node).find(".inst-type").html(generateInstTypeHtml(instType));
     $(node).find(".inst-src0").html(generateInstSrcHtml(src0));
     $(node).find(".inst-src1").html(generateInstSrcHtml(src1));
@@ -206,6 +217,16 @@ function confirmModifyInst(node) {
         $(parent).find(".inst-modify-btns-panel").remove();
         $(parent).append(generateInstResultPart());
         $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+        return true;
+    } else {
+        $(parent).find(".inst-type").html(instType_backup);
+        $(parent).find(".inst-src0").html(src0_backup);
+        $(parent).find(".inst-src1").html(src1_backup);
+        $(parent).find(".inst-src2").html(src2_backup);
+        $(parent).find(".inst-modify-btns-panel").remove();
+        $(parent).append(generateInstResultPart());
+        $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+        return false;
     }
 }
 
@@ -227,6 +248,11 @@ function confirmModifyMemValue(node) {
     var parent = parents[0];
     var id = parent.id.substring(4);
     var value = $(parent).find(".mem-value").find("input").val();
+    var address = $(parent).find(".mem-address").html();
+    if(!checkNoNegInt(value)) {
+        return;
+    }
+    bus.memory[parseInt(address)] = parseInt(value);
     $(parent).find(".mem-value").html(value);
     $(".mem-row").attr("ondblclick", 'modifyMem(this)');
 }
@@ -237,6 +263,11 @@ function confirmModifyFuValue(node) {
     var parent = parents[0];
     var id = parent.id.substring(3);
     var value = $(parent).find(".fu-value").find("input").val();
+    var address = $(parent).find(".fu-address").html();
+    if(!checkNoNegInt(value)) {
+        return;
+    }
+    bus.Fus[parseInt(address)].value = parseInt(value);
     $(parent).find(".fu-value").html(value);
     $(".fu-row").attr("ondblclick", 'modifyFu(this)');
 }
@@ -279,9 +310,14 @@ function clearInstTable() {
 function confirmChangeBreakpoint(node) {
     var parents = $(node).parents(".inst-row");
     var parent = parents[0];
-    var id = parent.id.substring(5);
-    if(changeBreakPoint(id)) {
-         confirmModifyInst(node);
-        $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+    var id = parseInt(parent.id.substring(5));
+    var flag = confirmModifyInst(node);
+    if(flag) {
+        changeBreakPoint(id);
+        if(bus.instBuffer[id].breakpoint) {
+            $(parent).addClass('breakpoint-row');
+        } else {
+            $(parent).removeClass('breakpoint-row');
+        }
     }
 }
