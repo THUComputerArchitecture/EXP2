@@ -9,7 +9,6 @@
     align-items: center;
 }
 
-
 .header {
     display: flex;
     flex-direction: row;
@@ -29,7 +28,6 @@
     margin-left: 20px;
     font-size: 15px;
 }
-
 
 .index-footer {
     background: none repeat scroll 0 0 white;
@@ -58,14 +56,13 @@
 }
 
 .cycles-input {
-    background: rgba(0,0,0,0);
+    background: rgba(0, 0, 0, 0);
     border: none;
     line-height: 30px;
     width: 20px;
     color: red;
     margin-left: 10px;
 }
-
 
 .page-title-panel {
     display: flex;
@@ -96,4 +93,130 @@
     flex-direction: row;
     align-items: center;
 
+}
+
+.ins-input {
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0);
+    /*border: solid 1px rgb(191, 191, 191);*/
+    /*color: #0f0f0f;*/
+    color: white;
+    border: none;
+    width: 180px;
+
+}
+
+.ins-input::placeholder {
+    color: white;
+}
+
+.instructions-result-part {
+    background: #1ab394 !important;
+    color: white;
+}
+
+.instructions-add-btn-part {
+    background: #1c84c6 !important;
+    color: white;
+    align-content: center;
+    align-items: center;
+}
+
+.instructions-add-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}
+
+.selectpicker {
+    background: rgba(0, 0, 0, 0);
+    color: white;
+    border: none;
+}
+
+.pipeline-board {
+    background: #1ab394;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.pipeline-item {
+    flex-grow: 1;
+    align-content: center;
+    text-align: center;
+    color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+
+.as-pipeline-stage-1 {
+    background: #00e1f6;
+    border-radius: 3px 0px 0px 3px;
+}
+
+.as-pipeline-stage-2 {
+    background: #00cce1;
+}
+
+.as-pipeline-stage-3 {
+    background: #009bb0;
+    border-radius: 0px 3px 3px 0px;
+}
+
+.pipeline-inst-board {
+    /*margin-top: 10px;*/
+}
+
+.pipeline-stage-label {
+    margin-bottom: 5px;
+}
+
+.Mul-Div-Pipeline-panel {
+    margin-top: 20px;
+}
+
+.md-pipeline-stage-1 {
+    background: #25f0c2;
+    border-radius: 3px 0px 0px 3px;
+}
+
+.md-pipeline-stage-2 {
+    background: #25deb0;
+}
+
+.md-pipeline-stage-3 {
+    background: #1bc9a8;
+}
+
+.md-pipeline-stage-4 {
+    background: #1ab394;
+}
+
+.md-pipeline-stage-5 {
+    background: #1a9d7f;
+}
+
+.md-pipeline-stage-6 {
+    background: #1a8567;
+}
+
+.md-pipeline-stage-7 {
+    background: #1a7456;
+    border-radius: 0px 3px 3px 0px;
+}
+
+
+.Mul-Div-Buffer-panel {
+    margin-top: 20px;
+}
+.load-buffer-panel {
+    margin-top: 20px;
+}
+
+.Store-buffer-panel {
+    margin-top: 20px;
 }
