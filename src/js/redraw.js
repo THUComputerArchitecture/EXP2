@@ -12,24 +12,25 @@ function updateBus(bus, insts, memStart, memNum){
     redrawTimer(bus.curTime);
     redrawAddPipeline(bus.addPipeline);
     redrawMulDivPipeLine(bus.mulDivPipeline);
+    //redrawMem(bus.memory, 10, 6);
 }
 
 
 
 function redrawMem(memory, start, num){
-    $("#MemArea").html(memHead);
+    $('#mem-table').dataTable().fnClearTable();
     for(var i = start; i < start + num; i++){
-        $("#MemArea").append(memDraw(i, memory[i]));
+        $('#mem-table').dataTable().fnAddData(memDraw(i, memory[i]));
     }
 }
 
 function redrawTimer(time){
-    $("#timer").html("Current Clock Cycle is <span style='color: red'>" + time + "</span>");
+    $("#timer").html(time );
 }
 
 function redrawLoadBuf(loadBuffers){
     $("#loadBufArea").html(loadBufHead);
-    for(i = 0; i < loadBuffers.length; i++){
+    for(i = 0; i < loadBuffers.length; i++) {
         $("#loadBufArea").append(loadBuffers[i].draw(i));
     }
 }
@@ -68,38 +69,19 @@ function redrawInst(insts, instCnt){
         if(insts[i] != null)
             $('#inst-table').dataTable().fnAddData(insts[i].draw(i));
     }
-    /*$('#inst-table').html(instTableHead);
-    for(i = 0; i < instCnt; i++){
-        if(insts[i] != null)
-            $('#inst-table').append(insts[i].draw(i));
-        console.log(insts[i].draw(i));
-    }
-    $('#inst-table').append('</tbody>');*/
 }
 
 function redrawAddPipeline(pipeline){
-    $("#addPipelineArea").html(pipeline.draw());
+    $("#addPipelineArea").html(pipeline.draw('as'));
 }
 
 function redrawMulDivPipeLine(pipeline){
-    $("#mulPipelineArea").html(pipeline.draw());
+    $("#mulPipelineArea").html(pipeline.draw('md'));
 }
 
-
-var instHead = '<tr>' +
-    '<th>Type</th>' +
-    '<th>InstructionName</th>' +
-    '<th>Src0</th>' +
-    '<th>Src1</th>' +
-    '<th>Src2</th>' +
-    '<th>issueTime</th>' +
-    '<th>excuteTime</th>' +
-    '<th>resultTime</th>' +
-    '</tr>';
-
 var stationHead = '<tr>' +
-    '<th>StationName</th>' +
-    '<th>InstName</th>' +
+    '<th>No</th>' +
+    '<th>Instruction</th>' +
     '<th>V1</th>' +
     '<th>Q1</th>' +
     '<th>V2</th>' +
@@ -108,44 +90,25 @@ var stationHead = '<tr>' +
     '</tr>';
 
 var loadBufHead = '<tr>' +
-    '<th>BufferName</th>' +
+    '<th>No</th>' +
     '<th>Busy</th>' +
     '<th>Destination</th>' +
     '<th>Address</th>' +
-    '<th>RemainingTime</th>' +
+    '<th>Remaining Time</th>' +
     '</tr>';
 
 var storeBufHead =  '<tr>' +
-    '<th>BufferName</th>' +
+    '<th>No</th>' +
     '<th>Busy</th>' +
     '<th>Address</th>' +
     '<th>Value</th>' +
-    '<th>WaitDev</th>' +
+    '<th>Wait Dev</th>' +
     '<th>Active</th>' +
-    '<th>RemainingTime</th>' +
+    '<th>Remaining Time</th>' +
     '</tr>';
 
 var FUHead =  '<tr>' +
-    '<th>FUName</th>' +
-    '<th>WaitDev</th>' +
-    '<th>Value</th>' +
-    '</tr>';
-
-var memHead = '<tr>' +
-    '<th>Address</th>' +
-    '<th>Value</th>' +
-    '</tr>';
-
-/*var instTableHead = '<thead>' +
-    '<tr>' +
     '<th>No</th>' +
-    '<th>Type</th>' +
-    '<th>Src0</th>' +
-    '<th>Src1</th>' +
-    '<th>Src2</th>' +
-    '<th class="instructions-result-part">Issue Time</th>' +
-    '<th class="instructions-result-part">Execution Time</th>' +
-    '<th class="instructions-result-part">Finish Time</th>' +
-    '</tr>' +
-    '</thead>' +
-    '<tbody>';*/
+    '<th>Value</th>' +
+    '<th>Wait Dev</th>' +
+    '</tr>';
