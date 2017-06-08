@@ -49,11 +49,12 @@ function modifyInst(node) {
     $(node).find(".inst-src1").html(generateInstSrcHtml(src1));
     $(node).find(".inst-src2").html(generateInstSrcHtml(src2));
     $(node).find(".instructions-result-part").remove();
-
+    $(".inst-row").removeAttr("ondblclick");
     $(node).append(generateInstModifyBtn());
 }
 
 function confirmModifyInst(node) {
+    var table = $('#inst-table').DataTable();
     var parents = $(node).parents(".inst-row");
     console.log("confirm");
     var parent = parents[0];
@@ -68,12 +69,16 @@ function confirmModifyInst(node) {
     $(parent).find(".inst-src2").html(src2);
     $(parent).find(".inst-modify-btns-panel").remove();
     $(parent).append(generateInstResultPart());
+    $(".inst-row").attr("ondblclick", 'modifyInst(this)');
+    table.draw();
 }
 
 function confirmDeleteInst(node) {
+    var table = $('#inst-table').DataTable();
     var parents = $(node).parents(".inst-row");
     var parent = parents[0];
-    $(parent).remove();
+    table.row(parent).remove().draw();
+    $(".inst-row").attr("ondblclick", 'modifyInst(this)');
 }
 
 
