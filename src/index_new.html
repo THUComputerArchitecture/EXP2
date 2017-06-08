@@ -29,20 +29,20 @@
         <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="header">
                 <div class="header-main-title">Computer Architecture project No.2</div>
-                <div class="header-sub-title">江天 2014XXXXXX</div>
-                <div class="header-sub-title">马凌峰 2014XXXXXX</div>
+                <div class="header-sub-title">江天 2014011410</div>
+                <div class="header-sub-title">马凌峰 2014011427</div>
                 <div class="header-sub-title">潘星宇 2014011245</div>
             </div>
         </nav>
         <div class="border-bottom white-bg page-title-panel">
             <div class="page-title">Tomasulo Smulator</div>
             <div class="file-btn-panel">
-                <button class="btn btn-primary">Save</button>
+                <button class="btn btn-primary" onclick="save2file(bus)">Save</button>
                 <label class="btn btn-success" style="margin-left: 10px">
                     <input id="select-file-btn" onchange="selectedFile(this)" type="file" style="display: none" />
                     Select File
                 </label>
-                <button class="btn btn-default" id="load-btn" style="margin-left: 10px">Load</button>
+                <button class="btn btn-default" id="load-btn" style="margin-left: 10px" onclick="loadFromFile(updateBus)">Load</button>
             </div>
         </div>
         <div class="wrapper wrapper-content animated fadeInRight">
