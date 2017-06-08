@@ -93,7 +93,21 @@ $(document).ready(function () {
         data: data
     });
 
+    $("#load-btn").attr('class','btn btn-default').attr('disabled', 'disabled');
+
 });
+
+function selectedFile(node){
+    console.log("change");
+    var file = node.files[0];
+    if(typeof(file) === 'undefined') {
+        $("#load-btn").attr('class','btn btn-default').attr('disabled', 'disabled');
+
+    } else {
+        $("#load-btn").attr('class','btn btn-success').removeAttr('disabled');
+    }
+}
+
 
 function selectInit() {
     for (var i in iName) {
@@ -174,7 +188,6 @@ function modifyFu(node) {
 }
 
 function confirmModifyInst(node) {
-    var table = $('#inst-table').dataTable();
     var parents = $(node).parents(".inst-row");
     console.log("confirm");
     var parent = parents[0];
@@ -190,7 +203,6 @@ function confirmModifyInst(node) {
     $(parent).find(".inst-modify-btns-panel").remove();
     $(parent).append(generateInstResultPart());
     $(".inst-row").attr("ondblclick", 'modifyInst(this)');
-    table.draw();
 }
 
 function confirmDeleteInst(node) {
@@ -202,7 +214,6 @@ function confirmDeleteInst(node) {
 }
 
 function confirmModifyMemValue(node) {
-    var table = $('#mem-table').dataTable();
     var parents = $(node).parents(".mem-row");
     console.log("confirm");
     var parent = parents[0];
@@ -210,11 +221,9 @@ function confirmModifyMemValue(node) {
     var value = $(parent).find(".mem-value").find("input").val();
     $(parent).find(".mem-value").html(value);
     $(".mem-row").attr("ondblclick", 'modifyMem(this)');
-    //table.draw();
 }
 
 function confirmModifyFuValue(node) {
-    var table = $('#fu-table').dataTable();
     var parents = $(node).parents(".fu-row");
     console.log("confirm");
     var parent = parents[0];
@@ -222,7 +231,6 @@ function confirmModifyFuValue(node) {
     var value = $(parent).find(".fu-value").find("input").val();
     $(parent).find(".fu-value").html(value);
     $(".fu-row").attr("ondblclick", 'modifyFu(this)');
-    //table.draw();
 }
 
 $(document).ready(function () {
