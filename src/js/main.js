@@ -93,7 +93,21 @@ $(document).ready(function () {
         data: data
     });
 
+    $("#load-btn").attr('class','btn btn-default').attr('disabled', 'disabled');
+
 });
+
+function selectedFile(node){
+    console.log("change");
+    var file = node.files[0];
+    if(typeof(file) === 'undefined') {
+        $("#load-btn").attr('class','btn btn-default').attr('disabled', 'disabled');
+
+    } else {
+        $("#load-btn").attr('class','btn btn-success').removeAttr('disabled');
+    }
+}
+
 
 function selectInit() {
     for (var i in iName) {
