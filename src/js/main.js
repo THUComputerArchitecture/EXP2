@@ -16,8 +16,24 @@ $(document).ready(function () {
                 $('td', row).eq(6).attr('class', 'instructions-result-part');
                 $('td', row).eq(7).attr('class', 'instructions-result-part');
                 $(row).attr('class', 'inst-row').attr('ondblclick', 'modifyInst(this)').attr('id', 'inst-' + index);
-                console.log(index);
             },
+            "columnDefs":[
+                {
+                    //设置第一列不参与搜索
+                    "targets":[5],
+                    "searchable":false
+                },
+                {
+                    //设置第一列不参与搜索
+                    "targets":[6],
+                    "searchable":false
+                },
+                {
+                    //设置第一列不参与搜索
+                    "targets":[7],
+                    "searchable":false
+                }
+            ]
         }
     );
     $('#mem-table').dataTable({
