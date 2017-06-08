@@ -9,6 +9,13 @@ var MUL_PIPELINE_STAGE_CCs = [1,2,2,2,2,2,1,1];
 var DIV_PIPELINE_STAGE_NUM = 6;
 var DIV_PIPELINE_STAGE_CCs = [6,7,7,7,7,7,6,1];
 
+var LOAD_BUF_SIZE = 3;
+var STORE_BUF_SIZE = 3;
+var FU_SIZE = 11;
+var ADD_STATION_SIZE = 3;
+var MUL_STATION_SIZE = 2;
+var INST_BUF_SIZE = 4096;
+
 function memDraw(index, value) {
     html = '<tr id="' + devName.mem + "_" + index + '">' +
         '<td>' + index +
@@ -282,12 +289,6 @@ function getStageCC(instName, stageNum){
         return DIV_PIPELINE_STAGE_CCs[stageNum];
 }
 
-var LOAD_BUF_SIZE = 3;
-var STORE_BUF_SIZE = 3;
-var FU_SIZE = 11;
-var ADD_STATION_SIZE = 3;
-var MUL_STATION_SIZE = 2;
-var INST_BUF_SIZE = 4096;
 
 function BUS(){
     this.init = function() {

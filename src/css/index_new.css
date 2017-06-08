@@ -207,10 +207,10 @@
     border-radius: 0px 3px 3px 0px;
 }
 
-
 .Mul-Div-Buffer-panel {
     margin-top: 20px;
 }
+
 .load-buffer-panel {
     margin-top: 20px;
 }
@@ -221,12 +221,6 @@
 
 .no-padding {
     padding: 0;
-}
-
-.inst-modify-input {
-    width: 50px;
-    border-radius: 3px;
-    border: solid 1px #8B91A0;
 }
 
 .inst-modify-btns-panel {
@@ -263,8 +257,9 @@
     margin-left: 3px;
 }
 
-.mem-modify-input {
+.inst-modify-input, .mem-modify-input, .fu-modify-input {
     width: 50px;
     border-radius: 3px;
     border: solid 1px #8B91A0;
 }
+

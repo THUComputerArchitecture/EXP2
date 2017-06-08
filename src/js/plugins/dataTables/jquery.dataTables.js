@@ -3331,7 +3331,7 @@
 	function _fnLengthChange ( settings, val )
 	{
 		var len = parseInt( val, 10 );
-		settings._iDisplayLength = ;
+		settings._iDisplayLength = len;
 
 		_fnLengthOverflow( settings );
 
