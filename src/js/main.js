@@ -36,6 +36,12 @@ $(document).ready(function () {
             ]
         }
     );
+    var data = [];
+
+    for(var i = 0; i < 4096; i++) {
+        data.push([i, '0']);
+    }
+
     $('#mem-table').dataTable({
         responsive: true,
         "dom": 'T<"clear">lfrtip',
@@ -47,9 +53,11 @@ $(document).ready(function () {
                 //设置第一列不参与搜索
                 "targets":[1],
                 "searchable":false
-            },
-        ]
+            }
+        ],
+        data: data
     });
+
 });
 
 function selectInit() {
